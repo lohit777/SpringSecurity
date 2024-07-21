@@ -1,0 +1,670 @@
+JPA And Hibernate
+
+For this we need to add Spring Data JPA, Spring web, Spring H2 and Spring Data JDBC Dependencies.
+
+When we start our application after adding these dependencies we will have a url in the logs(Console). Using this url we can connect to the h2 database.
+
+We need to give like this in application.properties to access h2 database.
+spring.h2.console.enabled=true 
+ After that we need to restart the server and go to localhost:8080/h2-console
+
+For the latest java version we need to add springboot dev tools dependency in addition to spring.h2.console.enabled=true .
+The JDBC url in localhost:8080/h2-console will always be incorrect
+As we have not yet configured the url we need to copy the URL generated in console which starts with jdbc:h2. This is the dynamically generated url and we need to change everytime which is difficult. So, we need to configure the url in application.properties as below
+spring.database.url=jdbc:h2:mem:testdb
+
+Initially the db will be empty.
+So, we need to create a sql file in src/main/resources and create a table with the fields required in the table.
+
+JDBC
+
+insert into course(id,name,author)
+values (1,'Learn AWS','in28minutes')
+
+select * from course
+
+delete from course where id=1
+
+Like this we need to write queries in H2 Database 
+
+JDBC
+Write a lot of SQL Queries and lot of Java Code
+
+Spring JDBC 
+Write lot of SQL Queries but less Java Code
+
+Data in h2 console gets refreshed each time you refresh the browser
+
+JDBC
+JDBCTemplate is used to fire the queries to the database
+@Repository annotation is used above the calss to indicate that the class talks to the database
+
+CommandlineRunner
+@FunctionalInterface
+Interface used to indicate that a bean should run when it is contained withina SpringApplication. Multiple CommandLineRunner beans can be 
+definedwithin the same application context and can be ordered using the Orderedinterface or @Order annotation. 
+
+WWhen you have some logic to run  when you start the application you can use commandlinerunner
+
+JPA 
+As writing queries will become difficult over a period of time in JDBC JPA is introduced and it uses a different approach.
+Using JPA we will be directly mapping Course bean with the table present in the database.
+To create mapping with the Bean and database we use Mapping @entity.
+@Id indicates that Id is the primary key
+@Column(name="author") indicates we are mapping author column in jpa to the column named Author in database
+As the names are same in bean and DB its not required.
+EntityManager is used when we want our JPA to talk to the Database
+
+Instead of Autowired to inject dependencies we use something called as PersisetenceContext when we have entity manager
+Expresses a dependency on a container-managed EntityManager and itsassociated persistence context.
+
+To insert a row in Database instead of writing the entire sql query we just need to use a method in entitymanager called merge
+entitymanager.merge(course) ;
+
+entitymanager.find(Course.class, id) ; //for select query we need to  use find method in entitymanager
+
+spring.jpa.show-sql=true - If we want to show sql used in jpa we use this property in application.properties
+@Transactional //Whenever we want to execute queries with JPA we need to use @transactional annotation
+
+JPA allows us to not worry about queries just we need to map entities to table
+For insert JPA first executes Select statement internally then performs insert
+
+Spring Data JPA
+It will make JPA even more simpler
+
+When using springjpa we need use interface and extend JpaRepository interface and pass entity which needed to be managed as input and also pass the 
+primarykey datatype as input.
+We need not write any code here just we need to extend JpaRepository.
+
+Whenever we use springdatajpa we need not use entitymanager at all.it will also go to the background.
+In springdatajpa we will use save method instead of insert to insert and update the values
+
+We can also define custom methods in SpringDataJpa for that we need to follow naming convention
+
+Hibernate vs JPA
+JPA defines the specification. It is an API. 
+It is like an interface.It defines how you can define an entity,primary key,map attributes and also manage entities.It will also do things with help
+ of entities.
+Hibernate is one of the popular implementations of JPA.
+Jpa tells us how to define an entity ,map attributes and Hibernate implements it.
+Using hibernate directly would result lock in to Hibernate.
+Instead we will use JPA and by having hibernate jar in our classpath we are using hibernate as a implementation of JPA
+Spring-boot-starter-data-jpa dependency will have hibernate dependency in it.
+
+Below dependencies needs to be added for jpa and in memory database
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+h2 website by default uses frames but spring security doesn't allow frames. So, we need to make sure frames are used in h2 when spring security is 
+used.
+
+Repository allows us to connect the bean to database to update/add/delete the rows in database.
+
+When we add data JPA and H2 Dependencies spring boot auto configures below things:
+Initialise JPA and spring Data JPA frameworks
+launch an in memory database(H2)
+Setup connection from app to in memmory database
+		
+
+Docker run command is used to launch mysql
+mysql:8-oracle - this is the docker mysql image
+docker run --detach 
+--env MYSQL_ROOT_PASSWORD=dummypassword  //We are configuring a root password password for the db
+ --env MYSQL_USER=todos-user  //we are creating a user and password as we need this if we are connecting to a database
+--env MYSQL_PASSWORD=dummytodos 
+--env MYSQL_DATABASE=todos /We are also creating a database 
+--name mysql  //We are giving the container a name mysql
+--publish 3306:3306 //We are publsihing it to a specific port
+ mysql:8-oracle
+
+If you want to install anything in your development machine its better to install docker
+
+<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+		</dependency>
+		
+		
+Embeddable annotation
+Strategy in generatedValue
+Sessionfactory
+cascadetype in OnetoOne
+@JoinColumn
+
+To connect 2 entities based on the relationship they have we need to inject one entity into other then we need to give @OnetoOne or @OneToMany 
+annotation on the injected object based on the requirement.
+
+Ex:
+@Entity
+class Customer
+{
+@OnetoMany(targetEntity =Product.class,cascade=CascadeType.ALL)   //Here target is the class which we nare connecting with and cascade will cascade the information to customer class
+//If you don't give cascadeall you will not be able to update  i.e.e, information of product needs to be cascaded to customer
+@JoinColumn(name="cp_fk",referencedColumnName="id") //This means customer id column from customer tablewill act as a foreign keyin your product tab;e
+private List<Product> products ;  -> here we are injecting Products entity to customer entity by giving OneToMany annotation  
+}
+
+To write query in sprin data jpa we for our custom defined methods we need to use @Query annotation
+ex:
+@Query("SELECT c.name ,p.productname FROM Customer c JOIN c.products p")
+our custom defined method
+
+@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+
+catalog
+
+@GeneratedValue(strategy=GENERATEDType.Auto) // It will autonmatically create a prinary key if we give this annotation on our required fields
+
+spring.jpa.hibernate.ddl-auto=create-drop -> study about this
+
+Use of JPA if there is already Hibernate
+Standardization: JPA is a Java EE specification that provides a standard API for Java persistence frameworks. 
+It offers a set of interfaces and annotations for defining and managing relational data models in Java applications.
+ By adhering to the JPA specification, developers can write code that is portable across different JPA implementations, 
+ including Hibernate, EclipseLink, and others.
+2.Vendor Neutrality: JPA allows developers to write persistence code without being tied to a specific implementation. 
+This means that applications using JPA can switch between different JPA providers (such as Hibernate, EclipseLink, or Apache OpenJPA) without changing
+ the application code. This vendor neutrality promotes flexibility and interoperability in Java EE applications.
+3.Ease of Integration: JPA is seamlessly integrated with Java EE technologies and frameworks, making it easy to use in enterprise applications. 
+It works well with other Java EE APIs such as Servlets, JSP, EJB, CDI, and JTA, providing a cohesive and integrated development environment for building Java applications.
+
+ORM stands for Object-Relational Mapping, and it refers to the technique of mapping object-oriented programming language data models to relational database models. 
+ORM frameworks automate the conversion process, allowing developers to work with objects in their application code while transparently persisting data to and from a relational database.
+
+Transactional Management
+If for example you are trying to send some money to other bank account.
+For this there would be 2 steps 1.deduct money from your bank account and 2.credit into the other bank account.
+Take for instance the bank B server is down and money is deducted from A's bank account.
+In such cases the transaction should rollback to itas original state i.e. the money shhould be credited back to A
+This is called transactional management.
+
+Important properties in transactional management
+ACID properties in transactional management
+A - > Atomicity -> it is the basiic thing any transactional management should achieve.Either the transaction should be completely successful or the changes
+done by transaction should be completely reverted back.Thats what atomicity wants to achieve.
+C -> Consistency -> Any transaction should leave a system in a consistent state.Leaving the system in a consistent state
+ wheteter the transaction completes or not.Ex-> You are transfering amount 100 from Account A to other's 
+bank account B within the same bank
+The total sum of amount in account A and account B should be same before and after the transaction is completed.
+Even if the transaction is completed or not the total sum of money should be same in both the bank accounts.This means it is in a consistent state.
+I -> Isolation
+D -> Durability ->If a transaction is successful and system crashes after that we need to make sure that the data is persisted(transaction state should be persisted).
+The data should be permanent after the transaction is successful.
+
+
+Dirty Read
+Consider there are 2 transactions one is to send 50Rs from A's account(A's initial balance is 200Rs) to B's account and second is to second 100Rs from A's account to C's account
+Consider both of them are running parallely i.e., first 50rs will be dedducted from A's account and then instead of crediting it to B's account
+Transaction 2 will start and 100Rs will be dedducted from A's account and then the amount will be credit to B and then C if the transaction is 
+successful.
+If the Transaction 1 fails in the 2nd step i.e., amount will be deducted from A's account and not credited to B's account then the transaction
+will be rolled back and the A's account will have 200Rs
+But we are not considering the scenario  where Transaction 2 is started before transaction 1 is committed i.e., when the transaction 1 is started
+it will deducted 50rs from A's account and transaction 2 will be started and deduct 100Rs from A's account so the amount in A's account will be 50rs
+but the amount will not be credite to B's account due to transaction 1 failure and the transaction 1 will be rolled back to its initial state and 
+A will have 200Rs instead of 100 and Transaction 2 next step will be processed i.e., crediting amount to account C even though the amount in the account
+A is same.
+This is because Transaction 2 is reading data from a transaction which is not committed.
+This is called dirty read.Dirty read is another transaction reading the modified value before a given transaction is completed.
+
+Non-Repeatable Read
+Consider you are trying to fetch a value in a transaction from a table
+After that is done you are doing another transaction to update the value which you have read in first transaction
+Again you are trying to read tyhe same cvalue which you have read in first transaction. Now you will get updated value as in the 2nd transaction
+the value is updated.
+This is called Non Repeatable read i.e., when you are trying to fetch same value multiple times and getting different values each time it is called
+as non-repeatable read.
+
+Phantom Read
+ex
+Transaction 1 step 1- Select * from Person where age between 5 and 55 -> Initially there are 3 rows in transaction 1 whose age is between 5 and 55
+Transaction 2 Step 1 - Insert into person values ("Ravi",25) -> We are inserting a new row whose age is also between 5 and 55
+Trasanction 1 Step 2 - Select * from Person where age between 5 and 55  -> Now we are getting 4 rows from the same transaction as transaction 1
+This is called Phantom read.
+At different times we are getting different number of rows in the same transaction. This is called Phantom Read i.e., we are reading a phantom row added
+
+Different types of Isolation levels
+Read UnCommitted -> No restrictions. You will allow any transaction to read read any data committed or uncommitted.You will not have any locks at all.
+All the above 3 problems will not be resolved using this.
+Read Committed -> It will only allow the transaciton to read data if its committed by another transaction.Any data that is changed during a transactiojn
+will only be availble after its committed. This will solve the problem of dirty read.
+Repeatable Read -> This will lock both modified values during a transaction as well as what values were read in that trasnaction. only if the read or
+modified transaction completes execution it will release lock on them. In this both dirty read and Non- Repeatable problems are solved.
+This will lock a row which is read/updated
+Serializable -> In this a table lock will be place on the constraint which we have used to read or modify the data. So when we try to use same constraint
+to read/modify data it will not be possible until the transaction completesa execution. This will solve all the above 3 problems
+
+Choosing Between Isolation levels
+As serializable locks entire table the performance will be poor.
+Typically the transactional isolation level used by most of the applications is committed read. It ensures performance of system is good.
+
+There are 2 transactional annotations from different packages
+One is from javax(JPA) and other is from springframework
+javax transactional annotation is sufficient when you are working with a single database. If you are making multiple updates to a database in a single
+transaction then transactional from javax is sufficient as it deals with a single database and if there is any error in transaction the transaction
+will be rolled back.
+If you want to manage transactions across multiple databases or messaging queues then the recomonded transactional annotation is to use fromm spring 
+package.
+Using Spring transactional level we can also decide which isolation level to use like read committed read uncommitted
+Syntax
+It should be above a method
+@Transactional(isolation=READ_COMMITTED)
+Method
+
+You can set default isolation levels across all the transacitons for a specific hibernate connection by configuring in application.properties
+spring.jpa.properties.hibernate.connection.isolation=2 
+Each value indicates a isolation level
+1 -> Read uncommited
+2-> READ_COMMITTED
+4-> Repeatable Read
+8 -> Serializable
+
+JPA and hibernate in depth
+Objects which we store to the database are called entities.
+
+spring.datasource.url=jdbc:h2:mem:testdb;NON_KEYWORDS=USER
+spring.h2.console.enabled=true
+spring.data.jpa.repositories.bootstrap-mode=default
+spring.jpa.defer-datasource-initialization=true
+
+
+Spring.jpa.properties.hibernate.generate_statistics=true //This configuration will enable statistics like how many queries are fired.
+logging.level.org.hibernate.stat=debug
+spring.jpa.show-sql=true // to show what quesries are fired
+logging.level.org.hibernate.type=trace //to see what parameters are being sent in.
+
+Springboot auto configuration would create schema for us when there is a embedded database.
+
+Entity is a bean which is stored to your database
+Entity Bean maps to row in the table
+EntityManager is a interface to persistencecontext
+All the entities which are being saved through the entity manager are saved to something called persistencecontext
+The persistencecontext keeps track of all the different entities which are changed during this transaction.
+
+When we use commandlinerunner and whenever the application gets launched the code in the run method cgets executed
+
+We have flush method in EntityManager which will send the changes done to the database
+When you try to insert a new row in DB using save method in entity manager and update it and even though if you don't  save it into database the 
+changes will be saved to the database. 
+//Whenever you are inside a transactional and you are managing something with entitymanager like inserting/deleting/updating
+		//that particular thing is managed by entity manager until the  end of the transaction
+		
+Detach method in entity manager makes sure that the changes which are t=done in the entity after this statement will not be saved to the databased.
+If you don't waant anything to save into a database after a particular point you can use detach method.
+After detach that particular entity is no longer tracked by entity  manager
+
+clear method also is used to not track a entity manager. If there are mulitple instances of a EntityManager and we don't want EntityManager to track
+all the instances we can use clear wherease detach is used for a single instance
+
+Refresh method in entitiymanageer
+//refresh method will refresh the entity with the content that is  present in database
+		//All the updates which we do are not saved into database if we don't explicitly save while using refresh method
+		
+JPQL
+Java Persistence Query Language
+In SQL we query from db tables
+In JPQL we query from Entities. Whatever JPQL queries we write those are converted into JPQL by JPA implementation that is hibernate.
+
+JPQL provides a way of writing queries using entities.
+
+Normal SQL Query
+SELECT * From Course
+
+JPQL Query
+Select c From Course c // Here we are querying the  Entity Course not the table course and giving it a alias
+
+If  you dont want to write these queries also and give this work to Java API we can have something called Criteria Query
+Learn about criteria queries in eclipse
+
+When we use  JPA one of the advantages is you can easily shift  from hibernate to any other persistance provider.
+Don't use hibernate specific feature if you use it it means you are tied to hibernate
+
+@Table(name="Course") -> It is used to define the name of a table
+If the name of the entity is different from  the name of the table we can use @Tbale annotation and give the name of the table in the parametrs
+
+@Column(name="fullname") -> It is used to define a name of a column
+It is used to map a column in entity to a table
+@Column(name="fullname",nullable=false) -> This means name cannot have a null value
+We also have Unique attribute in Column annotation. If you specify unique on any attribute it will be unique across the table.
+insertable -> it will tell whether we can insert a new entity with that column or not. Whenever a new row will be inserted in that table the column
+will not  be sent
+Updateable -> It indicates if that column needs to be included in the update statements that are sent. If we give updateable=false and when that 
+particualr entity is updated this column will not be sent
+length -> We can specify the maximum length of that specific column
+
+LocalDateTime class is used to store the date and time 
+@UpdateTimeStamp -> This annotation is  used on a column to get the last updated time of the entity
+
+Ex
+@UpdatedTimeStamp
+private LocalDateTime lastUpdatedDate;
+This is a hibernate annotation not a JPA annotation
+
+@CreationTimeStamp -> It will give when the entity is created
+
+sysdate() will give the system date
+
+Using namedqueries you can assign name to a query and use it innstead of writing JPQL queries again and again
+For that first we need to use @NamedQuery annotation on the entity
+
+Syntax :
+@NamedQuery(name="query_get_all_courser",query = "Select c From Course c") // We can use this query with its name in other things
+
+If you want to use multiple named queries you need to use @NamedQueries
+
+@NamedQueries(value= {@NamedQuery(name="query_get_all_courses",query = "Select c From Course c"),
+		@NamedQuery(name="query_get_100_step_courses",query="Select c From Course c where name like '%100 Steps")
+})
+
+NativeQueries
+Native Queries are nothing but sending out direct SQL queries from your JPA
+like Select * from course ;
+If you want to use database specific features you can go with Native queries
+If you are connecting to  a database and it has a feature which is not supported by JPA in those situations we should go with Native query.
+Even when we have to do a mass update we will go for  native  queries
+You cannot do a mass update using JPA
+
+We need to write  the  query using createNativeQuery("Query") and execute it using executeUpdate method
+
+Establishing relationships between JPA and Hibernate
+
+In one to one relationship if Table A has the ID of Table B it means Table A is owning the relationship
+
+Foreign key is nothing but id of another table.
+When relating A and B primary key in B becomes foreign key in B
+
+In one to ojne relationship it will be eager fetch i.e., it will ffetch the details of the table which we are trying  
+		//to fetch as well as the table to which it is related to by  default
+	
+For example you want to fetch details of A table which is onetoone related to table B then by default details of the table B also will be fetched
+This is called  eager fetching
+
+Eager initialization doesn't work always. We may not need the values of other table but still getting it .
+So in such ccases we need to make the initialization lazy
+@OnetoOne(fetch=FetchType.LAZY)
+This will make sure that we don't get the values from the other table when we try to get details from this table.
+Only when the details are needed we need to get them by calling the methods
+
+In JPA as soon as you define a transaction you would also  create something called PersisetenceContext.
+The persistencecontext is a place where all the entities which are working on are being stored
+
+The way we interact with a persistencecontext is by using a entitiymanageer
+The persistencecontext is where all the changes we are doing are kept track of.
+PersisetenceContext is created at the start of the transaction and killed at the end of the transaction
+When you don't give @Transactional persistencecontext will be opened and cclosed for each time we are making using of the entity but not for the entire method
+
+In Hibernate session means persistencecontext.
+
+When you put @Transactional on a method then everything inside that method will be a part of a transaction
+Either all of them will succeed or none of them will  succeed.
+PersisetenceContext  will give you access to the database
+
+Using onetoone you can make bidirectional relationship by including this annotation in both the entities
+But using this there will be duplication of data
+To stop the duplication we need to make one entity own the other entity
+For the we need to give mappedBy="name of the entity" inside the OnetoOne variables
+@OneToOne(fetch=FetchType.LAZY,mappedBy="passport")
+You should add mappedby on the entity which you don't want to own
+For example I want to make Student owning side of the relationship I gavve mappedby in Passport
+
+
+Hibernate waits until last possible moment to save the details to database
+If  you want to push before the transaction is completed you can use .flush so the changes will be saved to database
+
+Even for read only methods you need @Transactional. This is because when you try to find a user based on a id using enntitymanager you will get the 
+user for that particular id and transaction will be closed
+Now when you try to get comments of that particular user andd when you give user.getComments() as there will be nothing in persistencecontext
+it will throw an exception as it will takew as a different transaction.
+
+ManyToOne relationship
+In many to one relationship you need to define the relationship in the one side i.e., you need to mention primary key of entity table of Maany entity
+because each row in One relationship will point to only one id of Many whereas one row of Many will point to many recoords in one.
+By default in OneToMany relationships the fetch type is lazy. If you want to make it eager you need to explicitly mention it.
+On the ManyToOne side of the relationship the fetch type is eager by default.
+
+ManyToMany relationashiop
+We cannot have multiple values in a single row. We can have only one foreign key for a particular primary key i.e., we can map to only one record
+to the other entity from the current entity.
+This is where joins comes into picture.
+In ManyToMany relationship we need to design a table with primary key from both the tables.
+For one primary in one table we need to map to other primary in another table
+If there is another primary key for the same we need to include it into a new column.
+This join table would help to establish a manytomany relationaship between both the tables
+In manytomany relationship we will have a join table anyway so it doesn't matter which side is the owning side of the relationship.
+Join table will be created autonmatically for many to many relationship with primary key from both the tables.
+We can create custom join table using @JoinTable annotation
+We can give name of the join table and we can also give names of the join column like instead of getting default names we can give the  column name
+like the name of the primary key of the current table
+Along with that we can also change the column name of the primary key of other entity also using inversejoincolumn
+ex:
+@JoinTable(name="STUDENT_COURSE",   //This annotation is used to create a table in ManyToMany relationship for primary keys of both the tables
+			joinColumns = @JoinColumn(name="STUDENT_ID"), //joinColumn is used to use the name the primary keyy of the current table
+			inverseJoinColumns = @JoinColumn(name="COURSE_ID"))  //Inversejoincolumn is used to define the inverse  relationship i.e., 
+			the column name which is used to map the course table
+			
+By default ManyToMany will use Lazy fetch
+
+If there are multiple classes inheriting one class and we need the details of those multiple classes in one table then we can give 
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE) // In this we are defining the strategy as Single Table so that the inherited tables will be underlying
+a single table
+annotation so that all the classes which are inheriting the parent class will have data in a single table
+All the subclass entities will be stored in a single table
+The problem with single table approach is it will have a lot of nullable columns. So we have TABLE_PER_cLASS Strategy
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)//This strategy will create one table for each entity
+The problem with this is common columns are repeated in both the tables
+So we have another strategy which is JOINED.
+In this strategy the field specific to subclass are mapped to a seperate table than the fields that are common to the parent class and a 
+join is performed to instantiate the subclass
+For parent class one table will be created and for each subclass one seperate table will be created so performance wise its not recommended
+Instead of using Inheritance we can use @MappedSuperclass but when we use this we can't use @Entity
+When we use this annotation we cant use queries on the superclass
+We need to have queries only on subclasses
+
+If you are really concerned about data integrity we can use JOINED Column strategy
+If you are worried about performance single table would be helpful
+Once the table is created we will have a new column called DistinguisherType to define which class is inherited
+We can change the name of the distinguisher column using below annotation
+@DiscriminatorColumn(name="EmployeeType") 
+
+
+
+If we need details of any user in a transaction we need to hit the DB and get the details. But if we need the details of a user multiple times in
+a transaction then for each time we need to hit the DB but instead of that we can store the details in the data Layer in cache so every time
+we need not hit the DB. This is the concept of caching
+In Hibernate there are 2 different levels of caching 
+First level cache and second level cache
+
+For example in a transaction you are trying to get the course details back multiple times.
+In the first time the hibernate talks with the database and gets the details back and from the nexct time it will get it from the cache/.
+This is where first level cache comees into picture.
+The first level cache is within the boundary of a singlr transaction.
+The second level cache comes into picture across multiple transactions.
+Lets say you have a appklication deployed on a application server and there are multiple users using this application.
+Irrespective of the users the list of states or list of countries remains same they don't change with the user. We can store such information in the '
+second level cache.
+Second level cache will typically store the common information for all the users of an application.
+First level cache is a data specifi to a single transaction.
+When you are trying to get the same details again and again within a transaction instread of going to a database we will get it from persistencecontext.
+The first level cache is within the boundary of a specific transaction.
+If we don't give @Transactional then the details will not be cached
+First level cache will be active by default
+
+You need to confugure for second level cache because hibernate doesn't know what data is not going to change
+eh cache is a second level caching framework
+We need to add ehcache dependency to use this cachje
+groupId ->org.hibernate
+artifactId --> hibernate-ehcache
+After adding the dependencies we need to configure below 4 things to enable second level of cache
+1.enable second level of cache
+spring.jpa.properties.hibernate.cache.use_second_level_cache=true
+2.specify the ccache framework
+spring.jpa.properties.hibernate.cache.region.factory_class=org.hibernate.chache.ehcache.EhCacheRegionFactory
+3.Only Cache which we need to cache not everything
+spring.jpa.properties.javax.persistence.sharedCache.mode=ENABLE_SELECTIVE
+DISABLE_SELECTIVE by default it will enable caching but will disable only the cache which we mention to disable.
+This will enable the caching only for which we specify the caching i.e., enablecaching = true
+4.what data to cache
+
+
+logging.level.net.sf.ehcache=debug -> this will enable logging for ehcache
+This will enable us to see lot more information of whats happenning in the bacjkground
+
+To enable cache for a particular entity across all the transactions you need to give @Cacheable annotation on the Entity
+It will enable cache for that particualr entity
+
+JpaRepository extends PagingAndSortingRepository which extends CrudRepository.CrudRepository extends repository
+CrudRepository provides basic crud operations
+PagingAndSortingRepository adds methods which would be needed to sort based on a specific field. to add pagination to the results which are delviered
+by crud repository.
+JpaRepository adds the jpa specific method.
+Ex: saveAndFlush,flush
+
+Pagination is something how many rows you ccan have in a single page
+
+Spring data Jpa rest helps us  to expose our rest to be able to operate on the entitiy. It is not recommended for production applications
+We need to add spring boot jpa rest dependency to our project to use this
+@RepositoryRestResource - add this annotation on top of your interface whihch extends jparepository to make it a rest resource
+We can ignore a specific field returned back in the json responsee by using @JsonIgnore
+
+Hibernate states
+Transient state
+Entities in the transient state are newly created objects that are not associated with any Hibernate session.
+These objects do not have any database representation and are not yet persisted to the database.
+
+Persistent state
+Entities in the persistent state are associated with a Hibernate session and have a corresponding database representation.
+When a transient entity is saved or persisted using the save() or persist() method, it transitions to the persistent state.
+
+Detached state
+Entities in the detached state were previously associated with a Hibernate session but are no longer actively managed by that session.
+Detached entities can be obtained when a session is closed, or when an entity is explicitly detached using the evict() or detach() method.
+
+Removed state
+Entities in the removed state have been marked for deletion and will be removed from the database during the next transaction commit.
+Entities are transitioned to the removed state by calling the delete() method on a persistent entity.
+
+Spring Data JPA
+It provides high level of abstraction compared to hibernate and reduces code complexities
+Spring Data JPA is designed to simplify data access by providing default implementations for common CRUD (Create, Read, Update, Delete) 
+operations and query methods. It reduces boilerplate code and configuration, making it easier to get started with data access.
+Spring Data JPA is part of the larger Spring Data project and provides a high-level abstraction for working with data access technologies, including JPA.
+
+Hibernate offers more flexibility and power but requires more configuration and setup compared to Spring Data JPA.
+ While it provides powerful features for advanced use cases, it may have a steeper learning curve for developers new to ORM frameworks.
+ Hibernate operates at a lower level of abstraction and exposes more of the underlying JPA and Hibernate APIs.
+ Hibernate is a standalone ORM (Object-Relational Mapping) framework that implements the JPA specification and provides additional features 
+ beyond the standard JPA API. 
+ 
+Connection pooling 
+Connection pooling is a technique used to manage a pool of database connections that can be reused by multiple client applications.
+Connection pooling can be configured using properties such as the maximum number of connections, connection timeout, and idle connection eviction policy. 
+Popular connection pooling libraries in Java include Apache Commons DBCP, HikariCP, and Tomcat JDBC Pool.
+Spring boot provides a hikari connection pool
+Purpose: Establishing a new database connection is a resource-intensive operation that involves network communication and authentication. 
+Connection pooling minimizes this overhead by maintaining a pool of pre-established connections that can be reused as needed.
+How it Works: When a client application requests a connection from the pool, the connection pool manager provides an existing connection from the pool,
+ if available, or creates a new one if the pool is empty. 
+ After the client application finishes using the connection, it returns it to the pool for reuse.
+Benefits: Connection pooling improves application performance and scalability by reducing the overhead of creating and destroying database connections. 
+It also helps prevent resource exhaustion and connection leaks by enforcing limits on the number of connections and managing their lifecycle.
+Configuration: Connection pooling can be configured using properties such as the maximum number of connections, connection timeout, and idle connection eviction policy. 
+Popular connection pooling libraries in Java include Apache Commons DBCP, HikariCP, and Tomcat JDBC Pool.
+
+Data Source
+Definition: A data source is an object that provides access to a database and manages the underlying connection pool.
+Purpose: Data sources abstract the process of obtaining and managing database connections, allowing client applications to interact with a database 
+in a standardized way without worrying about low-level details such as connection pooling, driver loading, or connection URL construction.
+Types: There are different types of data sources, including:
+Pooled Data Source: A data source that incorporates connection pooling functionality, allowing efficient reuse of database connections.
+Driver Data Source: A basic data source that directly interacts with a JDBC driver to establish connections to a database. 
+It may or may not include connection pooling.
+JNDI Data Source: A data source managed by a Java Naming and Directory Interface (JNDI) server, which provides centralized configuration and lookup of resources such as database connections.
+Usage: In Java applications, data sources are typically configured and obtained using frameworks such as Spring or application servers like Apache Tomcat or JBoss. 
+They can be injected into application components or obtained from a JNDI context.
+
+Soft Deleting the rows
+Even though the rows are deleted from the database they will be available i.e, they are not completely deleted
+We can store the deleted objects.
+We can use a variable isDeleted in a entity where we are going to delete any row and use below annotation with sql query
+@SQLDelete(sql="update course set is_deleted=true where id=?")
+//This is the annotationn specific to hibernate. 
+//We want to call above query when a row is deleted and set is_deleted to true
+It will return a row ddeleted back
+The row will not be deleted in the database. So when we try to fetch the same  row again after deleting it we will get the result back
+To not get the deleted query result  back we can use this annotation
+@Where(clause="is_Deleted=false")
+Entity
+Then the queries  to this entity which have isDeleted=false only will be executed
+But the above annotation will not be applicable to native queries. They are only applicable to JPQL queries
+You need to make sure to add the where condition in each condition
+
+Whenever a row off specific entity is deleted there is a method that gets fired thats called preremove
+This preremove annotation whichever method is on it would be called whenever a row of this specific entity would be called
+
+Methods in a entity life cycle
+PostLoad -> If you mark a method with this annotation it would be called as soon as entity is retrieved and loaded
+PostPersist -> This method will be called when you want to persist something to a database. It would be called after the entitty is persisted to db.
+PostRemove -> This would be called after deleting an row in an entity
+PostUpdate  -> After update to an entity is fired to database
+All the below would be called before persisting to the databse
+PrePersist
+PreRemove
+PreUpdate
+
+If you want a object to embedded into another object we use something called Embeddable annotation.
+When using  this annotation even though we don't define relationships between 2 entities  we can have values of one entity directly into another entity
+
+When we want the entity to embedded in another object then we need to give @Embedded in that particular entity
+Using this  we can get the values of the other entity in our  entity without  defining a relationship
+it will help us to take  values from other object and directly store them as part of current entity
+
+When to use JPA
+When you want to talk to a SQL database
+When you have a static domain model i.e., a model which is not automatically created
+When we have CRUD operations
+Mostly Simple Queries/Mappings
+
+When you have batch programs retrieving mmillions of rows and updating them then dont go with JPA
+
+Performance tuning in Hibernate
+Zero Performance tuning without measuring what  I need
+When you are doing performance  tuning do it only after you measure the performance.
+In Hibernate just enable  stats atleast one  of the environemnt to measure performance
+
+Indexes
+Add the right indexes on the databases
+One of the way to identify right index is to look at execution plan of your queries.
+You can find the steps the database is executing and identify the right index
+
+To switch from one database to other spring boot makes it really easy
+1.Add the dependency related to your database in pom.xml
+For mysql you need to add mysql dependency 
+<dependency>
+<groupId>mysql</groupId>
+<artifactId>mysql-connector-java</artifactId>
+</dependency>
+
+2.After that we need to configure in application.properties
+spring.jpa.hibernate.ddl-auto=none
+spring.datasource.url = jdbc:mysql://localhost:3306/person_example
+spring.datasource.username
+spring.datasource.password
+
+We neeed to create schema for the database
+
+@Version annotation is used to specify the version number for a specific entity. Version Number provided using @Version annotation is used to prevent 
+concurrent modification to an entity. When an entity is being updated, the version number is also incremented.
+ If another transaction tries to update the same entity with the older version number, an exception will be given.
+ The version number helps to prevent conflicts between concurrent transactions. @Version annotation is used for optimistic locking. 
+ Optimistic locking is a concurrency control mechanism in which it ensures that concurrent transactions will not conflict with each other. 
+If there is a chance of conflict during transactions the transaction having an older version number will be aborted.  

@@ -1,0 +1,43 @@
+SSD stores everything whichb is not running.
+RAM stores everything which is running. everything goes to RAM in the form of 0's and 1's after compilation. Compiler converts developer language to 0's and 1's as machine understands only 0's and 1's.
+
+Scripting vs Compiled languages
+In c++ it will compile the whole thing convert it into other file and run it
+
+JS is a interpreted language. We need not compile such languages. It will run like by line.Code will run partially if error comes later
+
+Why JS> Other scripting languages
+Most of the browsers understand JS
+Because of Node.js we can also use js for backend development
+
+Strict vs dynamic languages
+C++ is a strict language. We can't change type of a same variable. If we initialise a variable with particular type then we can't change the type of the variable.
+JS is a dynamic language as we can change type of variables in the code
+
+JS is a single threaded language
+It can run only one use one core at a time
+it is considered as a bad language for scalable systems
+
+Variables in JS
+Let,var and const
+const cannot be changed throughout the program
+
+Datatypes: number, string and boolean
+
+IF/ELSE
+
+For loops
+
+Arrays
+
+Objects
+
+Functions - take arguments as i/p returns o/p
+Functions can take other functions as i/p
+
+setTimeout takes a function as input and callls the function provided as input after a period of time.
+
+Synch4ronous - one at a time
+Asynchronous - multiple things are context switching with each other
+
+Async functions in js - setTimeout, fs.readFile,fetch

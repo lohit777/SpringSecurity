@@ -1,0 +1,355 @@
+Spring Security
+
+In any system If any user wanrts to perform any action  on aresource/DB or anything then the system needs to authernicate him.
+Like if he is the user who claims to vbe 
+We can also provide multifactor autheniucation.
+once the user logs in needs  to check whether he have proper authorization to update the details.
+
+Small security flaws make an apap with robust architecture vulnerable
+ 
+6 principles of Building security system
+1.Trust nothing - > Validate all the requests that comes into the system.
+2.Assign least privileges ->Start the design of your system with security in your mind and have a clear picture of user roles and acceses in mind.
+Assign minimum possible privileges at all levels.
+3.Have complete mediation -> Every request should go through 1 gate.
+Apply a well implemented security filter. Test the role and access of each user.
+4.Have Defense in Depth ->provide multiple levels of security. Have security at Transport level,Infrastructure level,Network level
+5.Have Economy of Mechanism ->Security Architecture should be simple. Simpler systems are easier to protect.
+6.Ensure Openness of Design ->Easier to identify and fix security flaws.
+Make sure you are using some of the security standards like OAuth,JWT
+
+Spring Security is the most popular spring project in Spring eco system.It will protect your web applications, REST APIand microservices.
+
+Concepts in Spring Security
+Filter chain
+Authenication managers
+Authenication providers
+OAuthJWT
+
+Spring security provides a very flexible security system.
+By default everything is protected using spring security
+A chain of filters ensure proper autheniucation and authorization
+
+All requests that come into a spring web application come into Dispatcher Servlet first.
+Dispatcher servlet looks at the method and url and route it to the correct controller
+Dispatcher servlet intercepts all requests
+
+Using Spring Security instead of DispatcherServlet spring security intercepts all the request before dispatcher servlet.
+
+You will configure a filter chain and this filter chain would intercept all the requests 
+
+Spring security executes a series of filters as soon as a request comes in.
+This is what is called a spring security filter chain.
+
+Filters provides these basic features
+Authentication : Is it a valid user?(Ex: basicAuthenicationFilter)
+Authorization :does the user jhave right access(Ex:Authorizationfilter)
+Other features :
+1)Cross origin resource sharing(CORS) - CorsFilter
+Shoould you allow AJAX calls from other domains
+2)Cross site Request Forgery(CSRF) 
+A malicious website using of previous autheniucation on your website
+Default CSRF protection is enabled for update requests
+3)Default login and logout page
+4)Translating exceptions into proper http responses(ExceptionTranslationFilter)
+Whenever an exception occurs while logging  in you need not send exception details as is to the user.Spring security takes care of it
+
+order of filters is important
+Filters order 
+1. Basic check filters - CORS,CSRF
+2.Authenication
+3.Authorization
+
+
+By default everything is protected using spring security
+By default spring security provides form autheniucation
+
+Form based autheniucation:
+It is a typical autheniucation used by most of the web applications
+In the backend a session cookie is created. for every subsequent actions on the website this cookie will be sent along with the website
+
+Spring security provides with a default login/logout page
+It provides a default /logout URL
+
+Basic Authenication is the most basic option for securing REST APIs
+but it has many flaws.
+It is not recommended for production used
+
+Base 64 Encoded username and password is sent as a request header 
+Whenever you want to access  a REST API you need to give Authorizationin request header in your header and authorization header value would
+be something like Basic Base64encodedusernameandpassword.
+most of the rest api tools support basic autheniucation and they know how to do this encoding.
+But this Base64encodedusernameandpassword can be easily decoded so its not recommended for production use.
+Other flaw is Authorization header doesn't contain authorization information like user access roles. It only has username and password
+It doesn;t contain a expiry date
+
+When we give username and password while adding authorization headers in talon api tester then it will be converted into encoded format.
+
+
+CSRF(Cross side Request Forgery) Concepts
+You login to your bank account and a cookie Cookie-A is saved in your web browser
+You go to malicious website without logging out 
+Malicious website executes a bank transfer without your knowledge using Cookie-A
+This problem is called CSRF
+
+You can protect from CSRF using below techniques
+1.Synchronizer token pattern
+ -> A token is created for each request -> A session ID or session cookie is created once per a user session.
+ It would be better to create a token for each request i.e.,, each page a user navigates to, each action user performs token is created.
+-> Whenever you want to make an update(PUT/POST) request you need a CSRF token from previous request. -> this is enabled by default in spring security
+
+Any post or put requests need a CSRF Token
+
+If you are using Thymeleaf to build your web application Spring Security automatically add CSRF Token for all the forms
+
+you don't need CSRF if there is no session involved or rthere is a stateless REST API.
+You need to disable CSRF for stateless REST API
+
+2.In addition to the synchronizer toke pattern we have a new pattern which is to use samesite cookie. You can set samesite cookie with the value as strict.
+In that scenario this cookie will be sent only to that site 
+you can enable samesite cookies by using below configuration in application.properties
+server.servlet.session.cookie.same-site=strict
+
+We have a class called SpringBootWebSecurityConfiguration which is a default configuration for web securiity
+It autheniucates your request enable form based authenication enable basic authenication and create a filter chain with all these things and return it back.
+The SpringBootWebSecurityConfiguration will also have CSRF filter and we want to disable for stateless REST API.
+
+
+CORS(Cross origin Request Sharing)
+Browsers do not allow AJAX calls to resources outside current origin.
+
+If you have a full stack application and your front end is making a request a REST API call to a different domain a different URL and typically your browsers
+doesn't allow those type of calls
+CORS allows you to configure which cross domain requests are allowed.
+When you are using Spring MVC you can specify which Cross domain requests are allowed by using CORS.
+You can use 2 approaches local configuration and global configuration in every controller.
+
+You can configure global configuration by adding addcorsMappings callback method in WebMvsConfigurer
+
+To enable local configuration you can go to specific requester method or controller class and add @CrossOrigin -> It will allow requests from all origins
+To alloe only from a specific origin we can give @CrossOrigin(origins="http://in28minutes.com")
+
+User credentials can be stored in 
+1.UserCredentials can be configured in application.properties but it is not a good practice
+2.you can access credentials from Database using JDBC/JPA and you can integreate spring security with the tables which are stored in the database
+3. Another protocol is LDAP(Lightweight Directory Access Protocol)
+Open protocol for directory services and authenication.
+
+When we want to use h2 database we wnat to enable frames as h2 database uses frames and frames are disabled by default using spring security.
+
+JdbcDaoImpl is one of the classes which is present in spring security core JAR file.
+It will have default user schema DDL location
+In the same package it will have users.ddl which contains schema
+
+Hashing vs Encoding vs Encryption
+Encoding -> Transfer data from one form to another.
+It is reverwsible if you have a encoded text you can decode it
+It is not used to secure data
+The goal is to compress data and stream your data.
+ex: Base64,wave ,MP3
+
+Hashing: Convert data into a hash(String)
+It is a one way process
+It is used to validate the integrity of the data. You can store passwords using hashing
+You can pass both hashcode and data to a request and the request will convert the data again to a hashcode and check if the hashcode passed and the converted hashcode are same
+Ex:Bcrypt,Scrypt
+
+Encryption : Encode using key or a password.
+You need a key or password to decrpyt.Ex: RSA
+Your encryption algorithm makes use of a data encryption key and creates encrypted text.
+By using decryption algorithm and data encryption key you can get the actual text back 
+The goal of encryption is to safeguard data.
+
+Storing Passwords using Spring Security
+Hashes like SHA-256 are no longer secure.
+Recommended way of storing passwords in spring security is Adaptive one way functions with work factor of 1 second.
+One way functions are the functions which work one way same like hashing function
+Work factor determines how much time it require to verify your password in your system.
+For storing passwords you don't want your hashing algorith to be too quick. If it is quick someone would write a brute force algorithm and get the password.
+So for storing passwords it should be slow.
+Ex:Bcrypt,,Encrypt,angor2 which follow Adaptive one way functions with work factor of 1 second.
+
+PasswordEncoder - This is the interface for performing one way transformation of password.
+It has a lot of implementations
+PasswordEncoder  performs hashing not encoding
+BcryptPasswordEncoder is one of the implementations and it is highly recommended.
+
+
+JWT(Json Web Token)
+In Basic Authenication there will be no expiration time and no user details also like what authorization the user has and basic Auth header can be 
+easily decoded.
+
+We can create a custom token system. Create a custom structure.The problem is that it might have security flaws.
+Service provider and Service consumer should understand the custom token system.
+Thats where JWT comes into picture
+It is an open industry standard for representing claims securely between two parties.
+It can contain user details and authorization.
+
+Details JWT Can contain
+Header 
+In header type of the token : JWT
+Which hashing algorithm is used : HS512
+
+It can also contain payload.
+Payload will have below values
+Standard attributes:
+iss: The issuer
+sub: The subject
+aud : The audience
+exp: When the token expires
+iat : when the token was issued
+You can also add a custom attribute to your JWT
+
+JWT also has a signature as part of it.
+
+A combination of Base64encoded value of your header Base64encoded value of your payload and your secret.All these combined are hashed and you have signature 
+as part of your JWT
+
+jwt.io allows you to decode, verify and generate JWTs.
+In JWTs you can make use of keys to encrypt and decrpyt 
+
+There are 2 types of encryption symmetric key and asymmetric key encryption.
+In symmetric key encryption we use same key for encryption and decryption
+Key factors you need to keep in mind for symmetric encryption is to choose the right encryption algorithm, how to secure the encryption key,how to share the encryption key.
+
+In Asymmetric key encryption we have 2 keys
+Public key and Private key.
+It is also called public key cryptiography
+Encrypt data with public key and decrypt with private key
+You can share public key with everyone and keep private key with you.
+
+
+High level JWT Flow
+First step is to create a JWT
+To create JWT you need to encode below details
+UserCredentials
+User data(payload)
+RSA Key pair 
+2nd step is sending JWT as part of request header
+You will  send it as part of authorization header  as a bearer token like below.
+Authorization: Bearer ${JWT_TOKEN}  Like this we have to authorise after creating a JWT Token
+3rd step is your JWT is verified on the server
+Once the server receives it it needs to decode the JWT.
+To be able to do that it needs key pair (Public key)
+
+OAuth2ResourceServerConfigurer is the class which can provide with OAuth2 resource configuration support
+
+To create a JWT Token after using OAuth2ResourceServerConfigurer we need to create below things
+1.Create Key Pair -> We have tool called OpenSSL to create a public and private keys.
+To generate key pair through code we will use java class keyPaiGenerator
+2.Create key Object using key pair -> We will use a library called nimbussds to do RSA encoding and decoding.
+It will be under OAuth resource server dependency.
+3.Create JWKSource(JSON WebKey Source) -> you can create a JSON with multiple keys.
+After that create JWKSource with the JWKSet
+4.Use RSA Key For Decoding -> We will use nimbus framework to do that
+Use JWKSource for Encoding
+
+Once JWT is sent to oauth resource server and check if the JWT Token is valid.We have done these in the above 4 steps.
+But before we decode a JWT we need to encode it and have a resource which can create JWT for us.
+
+First we need to create a Basic Auth for getting JWT Token by following above steps
+After that we need to use JWT Token as Bearer Token for authenicating requests to REST API like below
+Bearer ${JWT_TOKEN}
+
+Understanding Spring Security Authenication
+Authenication is done as part of spring security filter chain.
+Whenever a request comes in spring security woukld intercept it and entire chain will be executed.
+and as part of these filters authenication checks being done.
+
+Authenication starts with Authenication manager.It is the interface responsible for authenication.
+
+In Spring Security authenication represents 3 different things
+1.Credentials,username,password
+2. Principal details about the user
+3.Authorities
+
+Before the Authenicate method is invoked the auth method would contain only credentials.
+It the authenticate method call is successful it would contain principal and the authorities
+
+To confirm wherther a username and password is valid or not Authenticationmanager interacts with a lot of authentication providers
+Authenicationprovider perform specific authenication type.
+JwtAuthenticationprovider provides jwtauthentication
+
+The interface which authenticationproviders talk to is userdetailsservice - core interface to load data
+
+Authenicationresult is stored in security context holder.In securiity context holder you have security context where the authentication is stored.
+
+Spring Security Authorization
+1.Global Security :One of the way of authorizing global security is to authorizeHttpRequests
+requestMatchers("/users").hasRole("USER")   -> We are checking if we have users in the url and if the role of the user is USER
+We have different matchers like hasRole hasAuthority isAuthenicated  to configure authorisation
+
+2.Method Security //To use methodsecurity you need to enableit using @EnableMethodSecurity
+Once we enable method security we will be able to use it with the help of pre and post annotations
+ex - @PreAuthorize("hasRole('USER') and #username == authenication.name") -> If we give like this above a method it means to access the method the
+user needs to have a role of a user and with the specified username
+
+We can also do Post Authorize
+
+You can also implement method level security using JSR 250 annotations.
+To use  JSR250 Annotations you need to enable it by using follo annotations
+@EnableMethodSecurity(jsr250enabled=true)
+One of the annotation in jsr250 is @RolesAllowed({"ADMIN","USER"}) 
+
+We can also use secured annotation for method level security
+@EnableMethodSecurity(secureEnabled=true)
+Recommended approach is to use pre and post annotations
+
+OAuth : It is a industry standard protocol  for authorisation.
+It also supports Authentication now
+
+Lets say you want to provide access to your Google drive files to the todo management  application
+Important concepts in this
+Resource owner : you(person owning the google drive files)
+Client application : Todo maangement application
+Resource server : Where the files are present
+Authorization server : Google OAuth server
+
+If you want to generate a oauth2 toke you need to go to Google API Console and create credentials and use it for your login
+With this you will be able to access your files from google driver for your client application.
+##Google API console
+##http://localhost:8080/login/oauth2/code/google
+
+Once we create credentials using google API console we will get client id and secret name.
+We can configure it in our application.properties by using below. 
+spring.security.oauth2.client.registration.google.client-id=YOUR_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_SECRET
+
+
+JWT 
+When the client login we need to share username and password as part of the request.
+Instead of ppassing username and password everytime client can make use of JWT 
+
+@PostConstruct is used to load the method on application startup
+
+Config class is used to validate username and password
+
+We can extend WebSecurityConfigurerAdapter in the config class and override configure method
+
+We need to create another class which implements UserDetailsService if we want to get the userdetails fromm our defined database
+After implementing we need to override the method loadUserByUsername and write our custom logic inside that
+passwordEncoder we need to define inn config class
+
+We can create a utility class in which we will create jwttoken based on the username
+In that we can mention the claim , username when the token is issued , when it will expire, and with whichg algorith we need to sign
+
+We can also validate token by passing the token and userdetails object to validateToken method
+In that we can extractUsername using extractUsername method and check if the username is equal to the username method in db.
+
+We should authenticate with the help of authenticate method from authenticationmanager class by passing UsernameAndPasswordAuthenticationToken
+
+We can define all the global requests whether they can be allowed or not in configure method in configuration class
+
+Before the request goes to controller endpoint we need to validate the request in a filter. For that we need to write a filter class which extends
+OncePerRequestFilter and override doFilterInternal method
+
+We need to validate whether the username and password are valid or not if they are valid we should set it to SecurityContext
+
+After everything is done in the doFilterInternal method we need to pass request and response to filterChain.doFilter method
+
+
+https://github.com/tericcabrel/blog-tutorials/tree/main/springboot-jwt-auth/src
+
+https://github.com/Java-Techie-jt/spring-security-jwt-example/blob/master/src/main/java/com/javatechie/jwt/api/config/SecurityConfig.java
+
+https://www.linkedin.com/pulse/jwt-token-api-authentication-authorization-haroon-idrees#:~:text=The%20extractClaim%20method%20is%20a,on%20the%20provided%20UserDetails%20object.

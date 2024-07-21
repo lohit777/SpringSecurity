@@ -1,0 +1,15 @@
+package com.in28minutes.springboot.myfirstwebapp.hello;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping ;
+import org.springframework.web.bind.annotation.ResponseBody;
+@Controller  //it is something which handles web requests
+public class SayHelloController {
+
+	@RequestMapping("say-hello") //when you hit the url say-hello it will return "Hello what are you doing today!"
+	@ResponseBody  //Without this we will get error when we hit the url because spring expects return as String directly but not the statement. But @ResponseBody returns the statement as is to be displayed on the browser.
+	public String sayHello()
+	{
+		return "Hello what are you doing today!" ;
+	}
+}

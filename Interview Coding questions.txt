@@ -1,0 +1,57 @@
+
+
+class SingleTon{
+static SingleTon singleton ;
+private SingleTon(){
+}
+
+public singleton getInstance(){
+if(singleton== null)
+ singleton = new singleton();
+ return singleton ;
+}
+
+
+class MainClass{
+psvm(){
+SingleTon.getInstance() ;
+}
+
+
+class Employee{
+private int Employeeid;
+
+To make a class immutable we need to declare it as final and the variables and the methods in the class also a immutable
+
+
+
+List<Integer> number = arrays.asList(2,4,5,6,2,3) ;
+
+number.stream().filter().count(x-> x.
+
+number.stream().filter().distinct()
+
+number.stream().max().findThird() ;
+
+HashMap<String, Integer> numbers = new HashMap<>();
+    numbers.put("One", 1);
+    numbers.put("Two", 2);
+    numbers.put("Three", 3);
+    System.out.println("HashMap: " + numbers);
+
+    // value whose key is to be searched
+    String  value = "Three";
+
+    // iterate each entry of hashmap
+    for(Entry<String, Integer> entry: numbers.entrySet()) {
+
+      // if give value is equal to value from entry
+      // print the corresponding key
+      if(entry.getKey() == value) {
+        System.out.println("The key for value " + value + " is " + entry.getValue());
+        break;
+      }
+
+id Employeename salary
+
+ Select Employeename from Employee where Salary <= MAX(COUNT(Salary))

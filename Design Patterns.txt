@@ -1,0 +1,108 @@
+Design Patterns
+
+Creational design pattern
+Creational design patterns are concerned with the way of creating objects. These design patterns are used when a decision must be made at the time of instantiation of a class (i.e. creating an object of a class).
+
+Types of Creational design pattern
+1.Factory Method Pattern
+Define an interface or abstract class for creating an object but let the subclasses decide which class to instantiate. The Factory Method Pattern is also known as Virtual Constructor.
+
+For example there is a abstract class ElectricityBill and 3 classes(DomesticPlan,Commercial,Instituional) implement the method in the abstractclass i.e., each one will have different cost per unit.
+There will be a subclass which tells which class to execute based on the information provided.
+
+Advantages of Factory method Pattern
+Factory Method Pattern allows the sub-classes to choose the type of objects to create.
+It promotes the loose-coupling by eliminating the need to bind application-specific classes into the code. That means the code interacts solely with the resultant interface or abstract class, so that it will work with any classes that implement that interface or that extends that abstract class.
+
+2.Abstract Factory Pattern
+Define an interface or abstract class for creating families of related (or dependent) objects but without specifying their concrete sub-classes.That means Abstract Factory lets a class returns a factory of classes. So, this is the reason that Abstract Factory Pattern is one level higher than the Factory Pattern.
+An Abstract Factory Pattern is also known as Kit.
+
+
+3.Singleton Pattern
+Define a class that has only one instance and provides a global point of access to it
+Types of Singleton Pattern:
+Early Intialisation
+Lazy Intialisation
+Saves memory because object is not created at each request. Only single instance is reused again and again.
+Singleton pattern is mostly used in multi-threaded and database applications. It is used in logging, caching, thread pools, configuration settings etc.
+
+
+4.Prototype Pattern
+Cloning of an existing object instead of creating new one and can also be customized as per the requirement.
+It reduces the need of sub-classing.
+It hides complexities of creating objects.
+The clients can get new objects without knowing which type of object it will be.
+It lets you add or remove objects at runtime.
+
+For example you will implement a getclone() method from the interface Prototype
+ public Prototype getClone() {  
+          
+        return new EmployeeRecord(id,name,designation,salary,address);  
+    }  
+Create instance of the class which is implementing the prototye interface at beginning
+Later if you want another instance of that object you can clone it by calling clone method using first instnace
+EmployeeRecord e1=new EmployeeRecord(eid,ename,edesignation,esalary,eaddress);  
+EmployeeRecord e2=(EmployeeRecord) e1.getClone();  
+
+5.Builder Pattern
+Construct a complex object from simple objects using step-by-step approach
+It is mostly used when object can't be created in single step like in the de-serialization of a complex object.
+
+It provides clear separation between the construction and representation of an object.
+It provides better control over construction process.
+It supports to change the internal representation of objects.
+
+
+6.Object Pool Pattern
+To reuse the object that are expensive to create
+Basically, an Object pool is a container which contains a specified amount of objects. When an object is taken from the pool, it is not available in the pool until it is put back. Objects in the pool have a lifecycle: creation, validation and destroy.
+
+A pool helps to manage available resources in a better way. There are many using examples: especially in application servers there are data source pools, thread pools etc.
+t boosts the performance of the application significantly.
+It is most effective in a situation where the rate of initializing a class instance is high.
+It manages the connections and provides a way to reuse and share them.
+It can also provide the limit for the maximum number of objects that can be created.
+Usage:
+When an application requires objects which are expensive to create. Eg: there is a need of opening too many connections for the database then it takes too longer to create a new one and the database server will be overloaded.
+When there are several clients who need the same resource at different times.
+
+
+
+Structural design pattern - if there are 2 objects and you want to compose one object to other you need to use Structural design pattern
+
+Adaptor pattern
+An Adapter Pattern says that just "converts the interface of a class into another interface that a client wants".
+
+Facade pattern
+A Facade Pattern says that just "just provide a unified and simplified interface to a set of interfaces in a subsystem, therefore it hides the complexities of the subsystem from the client".
+
+In other words, Facade Pattern describes a higher-level interface that makes the sub-system easier to use.
+It shields the clients from the complexities of the sub-system components.
+It promotes loose coupling between subsystems and its clients.
+
+When you want to provide simple interface to a complex sub-system.
+When several dependencies exist between clients and the implementation classes of an abstraction.
+
+
+Behavioural design pattern - if you hsave 2 objects you don't want to compose them you want to make communication between them.In such cases this is used
+
+Strategy pattern
+A Strategy Pattern says that "defines a family of functionality, encapsulate each one, and make them interchangeable".
+It provides a substitute to subclassing.
+It defines each behavior within its own class, eliminating the need for conditional statements.
+It makes it easier to extend and incorporate new behavior without changing the application.
+Usage:
+When the multiple classes differ only in their behaviors.e.g. Servlet API.
+It is used when you need different variations of an algorithm.
+
+Observer pattern 
+An Observer Pattern says that "just define a one-to-one dependency so that when one object changes state, all its dependents are notified and updated automatically".
+
+
+The observer pattern is also known as Dependents or Publish-Subscribe.
+It describes the coupling between the objects and the observer.
+It provides the support for broadcast-type communication.
+Usage:
+When the change of a state in one object must be reflected in another object without keeping the objects tight coupled.
+When the framework we writes and needs to be enhanced in future with new observers with minimal changes.

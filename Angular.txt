@@ -1,0 +1,41 @@
+Angular
+
+Typescript: It is JS+Typing
+Normally in Js we don't define a type of a variable but in typescript we should define the type of the variable
+
+
+ANGULAR CLI helps us to create angular applications and also helps us to write a lot of code while developing Angular applications.
+It helps us to run our code locally and also run our integration tests, unit tests
+Angular CLI is like a Maven plugin
+
+To create a Angular project you can give ng new in command prompt after installing Angular CLI
+Intial code required for Angular CLI can be generated using ng generate
+ng build - to build you code
+ng lint - to run your code quality checks
+ng run - to run the applications
+ng test - to run the unit tests
+ng e2e - to run end to end tests
+ng serve - When you make any code change the change would be automatically picked up by your application
+
+ng serve is used to start your application
+
+ng lint - it will check your code for coding standards
+The coding standard will be present in tslint.json
+
+ng build - > before running ng build we need to run this command set NODE_OPTIONS=--openssl-legacy-provider
+When you run ng build it will create a new dist folder. There will be a few files present in there. We can directly launch the index.html 
+and run the entire application.
+We don't need any of the other code to launch the application
+When we deploy angular applications to production we need to execute ng dist it makes it easy to deploy the applications to other environments
+For that we need to copy the appplication to a webserver
+
+Unittests for angular are writter in a framework called jasmine and we will use karma to run the unit test
+
+These tests are defines in karma.conf.js
+Other than this there are many files for the specs
+the file will be .spec.ts
+
+ng e2e -> it is end to end test it will launch total application
+In angular e2e tests are written in a framework called protactor
+
+Angular.json defines what should happen when we run specific commands

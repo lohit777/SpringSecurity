@@ -1,0 +1,35 @@
+Monolithic application:
+We have everything in one place i.e., all the services in one place. You can keep everything in a package and deploy it.
+With this there will be team dependency, scalability issue
+We need to stick to one technology because of this.
+
+Using Microservices we can build each service using different language.
+As they are in different services even if any service goes down it doesn't effect application
+
+Using API we can connect between different services.
+They will have HTTP Servers and endpoints to communicate 
+
+
+REST API
+API is something that connects you to the server.
+We will send a request to server and the server returns response
+
+REST - Representational state transfer
+A REST API is an application programming Interface that follows the constraints of REST architectural style and allows for interaction with RESTful web services
+
+REST API work over HTTP
+Delivers information using any one of the following format
+JSON
+HTML
+XML
+tEXT 
+Javascript
+
+Learn Springboot starter dependencies 
+
+@SprinBootApplication - @EnableAutoConfiguration + @componentscan + @configuration
+@RestController - It will indicate Spring that it is the controller class and all the rest related stuff will be under this
+
+Add Spring web dependency for spring boot rest API
+
+@PutMapping - it is to update

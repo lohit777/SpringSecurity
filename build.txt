@@ -1,0 +1,39 @@
+build
+maven,gradle ant build tools for java
+
+groupid - 
+artifactid - jar file 
+
+you build application on lexis
+distribution management tells from where the jars needs to be downloaded
+nexis
+
+rpm - it is a package manager
+it is a wrapper around jar file
+
+rundeck ,puppet - configuration management tools
+jenkins 
+
+
+microservices
+dont deploy on onprem server using microservices
+deploy on cloud
+
+puppet,ansible 
+
+Distributionmanagement helps us to push the changes to lexis
+
+maven lifecycle
+
+dockerhub - get the base image
+
+docker build
+
+new image will be created
+
+github - centralised repo where we will have all the changes done by all the developers
+When we want to push 
+
+jenkins is used for CI/CD pipelines
+Jenkins will take the code form github url and will compile the code using the inbuilt compiler available in Jenkins
+Jenkins will also create a docker image if we automate. 

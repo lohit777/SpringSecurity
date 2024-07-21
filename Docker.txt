@@ -1,0 +1,207 @@
+Docker
+Docker helps to create container images and run them
+Operations team needs to follow below steps for deployment
+Setup Hardware
+Setup OS
+Install right software(Java for java application,python for python application)
+Setup Application dependencies
+Install Application
+
+It is a manual approach and it takes a lot of time and a high chance of making mistakes
+
+docker container run -d -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE 
+The meaning of the above statement is you want to run a docker container in port 5000 and the container image is present in 
+in28min/hello-world-python:0.0.1.RELEASE  and you want to run 0.0.1 version of the container
+
+Even though we don't install python application in our machine it will install it and execute our application without manual intervention
+
+Docker enables simple deployment process
+OS Doesn't matter
+Progrramming language doesn't matter
+Hardware doesn't matter
+
+Developer creates a Docker image
+Operations team run the docker image using a simple command
+
+The way you run a docker image remains the same irrespective of what the docker image contains 
+
+To stop the container when its running you need to give docker container stop "dockercontainerid"
+
+Docker image  will have everything you need to run your application
+It will have OS,Application Runtime(JDK or Python or NodeJS)
+Application code and dependencies are also part of docker image
+
+Docker is popular because 
+1.Docker provides standard application packaging i.e., it provides same packaging for all types of appplications
+Whether you have a java or Python or NodeJS application the packaging will be same
+The format of final docker image and the way you run iot is exactly the same
+
+2.Antoher factor is multi platform support
+You can run it on your local machine/cloud/datacentre. Just you need to have a docker runtime installed 
+
+3. Isolation
+Even if you have multiple containers running on same machine each container is isolated from each other
+
+docker container run -d -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE 
+When you give this statement docker container is downloaded from docker registry(Default: Docker hub) and we are running it as a container in our local machine
+Url of the image which we are downloading is https://hub.docker.com/r/in28min/hello-world-nodejs
+When you go to url you can see the docker image. Inside the docker registry you have created something called repository
+Inside the repository we will have multiple versions available
+hello-world-python - this is the name of the repository
+0.0.1.RELEASE - name of the tag
+
+Image is just a set of bytes and these bytes are hosted inside the docker registry
+Container is a running version of that image
+Docker ikmage is a static thing and docker container is running version of that image
+You can create as many containers as you want from a single docker image
+you can have 1000 instances of your application running from the same image
+
+A registry contains lot of repositories and of the repository which we ran is in28min/hello-world-python
+
+Repository name is tied to specific application/microservice and a tag is tied to a specific release or a version of your application
+
+-p hostport:containerport  - > -p 5000:5000
+containerport is something which is internal to a specific containter
+Each application runs inside a container in a specifc port
+You can take that and you can expose it on this specifc machine on a different port i.e., host port
+Here both hostport and containerport are same
+
+you can change the hostport but can't change the container port container port only developer of the imafge can change
+
+You can run multiple instances of the application by just changing the host port 
+
+By default when you run a container docker uses its own internal network called bridge networkand users of the application will not havef access to the bridge network.
+That is why we expose the port from the bridge network to a network on the host(port on our machine) and that enables users to access our application.
+
+-d -> It is detached mode
+It means whenever you run docker run command in your terminal it is given back to us that is called detached mode
+If you remove d in the run commmand you will not be able to use the command prompt anymore when the container is running
+Only if the container is terminated you will be able to get the control back in terminal
+
+Docker image is nothing but a package representing specific version of your application(or software)
+It contains everything your application needs
+
+Docker Registry : A place to store your docker images
+Docker Hub : A registry to host docker images 
+Inside a docker registry you can create docker repository. A docker repository contains docker images for a specific app/microservice
+Docker container is a runtime for docker image
+
+Dockerfile file with instructions to create docker image
+
+These are sample instructions in a docker file
+FROM openjdk:21-jdk-slim  //Every docker image starts with a base image and the base image which we are making use of here is openjdk and we are using a tag 21-jdk-slim 
+COPY target/*.jar app.jar   //When we build a springboot project the application jar will be created in the target folder.
+So in the local machine from the target folder we want to copy the jar file  into the docker image with a specific name
+COPY command copies new files or directories into the image
+EXPOSE 5000  //We are informing docker about the port that the container listens at runtime
+ENTRYPOINT ["java","-jar","/app.jar"] //We are configuring a command that will run at the container launch
+
+The jar file should be in your target folder in eclipse.
+Only after the jar file is present in target folder we will be able to copy it into an image
+Once we do mvn clean install inside target folder we will have a jar file 
+
+docker build -t in28min/hello-world-docker:v1 .  //Syntax for building a docker image in powershell
+We need to go to the location where we have dockerfile and give the above file to build docker image
+here in28min/hello-world-docker is the repository and v1   is the tag
+After the docker image is built if we need to check if it is built successfully or not we need to give docker image list and if you have your image
+we will get it in the list
+
+In the above step we created jar file in target folder by running mvn clean install but we can automate it also by following below steps in Dockerfile
+It is not recommended to build something into your local machine and copy to your docker image
+This is because when you run it on someone else machine there is a chancce that it might run differently
+So we will build jar file as part of our Docker image
+
+We have seperated the steps into 2 different stages
+First stage is to build jar file
+FROM maven:3.8.3-openjdk-17-slim AS build  //We are using a maven repository. As you want to build the jar file just open JDK is not sufficient
+//This is base image of maven and openjdk. Once we have maven we will be able to run mvn clean package
+WORKDIR /home/app  //We are setting working directory to /home/app
+COPY . /home/app  //We are copying everything from the current directory to /home/app
+RUN mvn -f /home/app/pom.xml clean package   //Once that is done we are running mvn clean package. To the Mvn we are passing -f /home/app/pom.xml as the pom.xml to build
+//We are using the pom.xml and building it inside the docker image
+We are giving the above stage a name called build
+At the end of this stage a jar file will be created
+ 
+FROM openjdk:21-jdk-slim
+EXPOSE 5000
+COPY --from=build /home/app/target/*.jar app.jar  //In this step instead of copying the jar  file  from our local machine we are copying it from the build stage
+ENTRYPOINT [ "sh", "-c", "java -jar /app.jar" ]
+
+The advantage of this is your build does not make use of anything build on your local machine
+
+We are using 2 images instead of a single maven jdk image because maven contains so many things which are not needed 
+To  build our image we would need as small container image as possible
+
+Using above step the build takes a lot of time. Even if you make small change in your source code it takes lot of time to build.
+
+Docker uses something called layering. Each command you give in docerfile will create a seperate layer and docker tried to reuse layers as much as possible
+
+For example if nothing has changed in the layer
+FROM maven:3.8.3-openjdk-17-slim AS build
+WORKDIR /home/app
+Docker would try to reuse this layer in next build
+
+The important thing you need to ensure is the things which will not change will be at the start of your build
+We are doing a maven build first as the dependencies in spring boot change very rarely and also copying the springbootapplication to a working directory
+We are copying only our springbootapplication file. We are not copying rest of the java files.
+This is because the main class and pom.xml will not change too often. So we are copying only these 2 files and triggering a build
+and once we trigger the build we are copying all the other files and triggering the build again
+ The good thing using this is if the pom.xml and RestfulWebServicesApplication service doesn't change it will not build these again and we will use layer from the previouse build for the first 5 steps
+FROM maven:3.8.3-openjdk-17-slim AS build
+WORKDIR /home/app
+
+COPY ./pom.xml /home/app/pom.xml
+COPY ./src/main/java/com/in28minutes/rest/webservices/restfulwebservices/RestfulWebServicesApplication.java	/home/app/src/main/java/com/in28minutes/rest/webservices/restfulwebservices/RestfulWebServicesApplication.java
+
+RUN mvn -f /home/app/pom.xml clean package
+
+COPY . /home/app
+RUN mvn -f /home/app/pom.xml clean package
+
+FROM openjdk:21-jdk-slim
+EXPOSE 5000
+COPY --from=build /home/app/target/*.jar app.jar
+ENTRYPOINT [ "sh", "-c", "java -jar /app.jar" ]
+
+Springboot maven plugin is the most popular maven plugin
+You can use spring boot maven plugin to create a docker image
+
+Spring Boot maven Plugin provides spring boot support in Apache Maven
+If you want to run a spring boot application if you want to create executable jar package and if you want to create a container image you can do 
+all these from the command line using spring boot maven plugin
+
+Commands in spring boot maven plugin
+mvn spring-boot:repackage -> you can repackage to create a jar or a war
+mvn spring-boot:run -> to run your spring boot application
+mvn spring-boot:start -> to run integration tests
+mvn spring-boot:stop -> to stop an application which is started with start command
+mvn spring-boot:build-image -> it is used to build a container image
+
+There are certain things called build packs available and spring boot maven plugin makes use of it to build an image  which is called an OCI
+Open Container Initiative Compatibile image
+Once you build an OCI image you can run in any runtimes which are compatible with OCI
+
+Docker is compatible with OCI
+spring-boot:build-image - this will create an very very efficient image. It will create an image  which is much smaller than the images  we created previusly
+Using Spring boot maven plugin yoou dont need to create a Dockerfile  
+docker container run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+docker container run -d -p 5000:5000 in28min/hello-world-java:0.0.1.RELEASE
+docker container run -d -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
+docker container ls 
+docker image ls
+docker container stop cc
+docker container run -d -p 5001:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+docker container run -d -p 5002:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+docker container run -p 5003:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+docker container run -p 5003:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+ 
+docker --version
+docker container ls
+docker build -t in28min/hello-world-docker:v1 .
+docker image list
+docker run -d -p 5000:5000 in28min/hello-world-docker:v1
+docker build -t in28min/hello-world-docker:v2 .
+docker container run -d -p 5000:5000 in28min/hello-world-docker:v2
+docker build -t in28min/hello-world-docker:v3 .
+docker container run -d -p 5000:5000 in28min/hello-world-docker:v3
+docker build -t in28min/hello-world-docker:v4 .

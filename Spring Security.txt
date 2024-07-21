@@ -1,0 +1,49 @@
+Spring Security
+We just need to add spring security in pom.xml to introdduce spring security in our application.
+After the spring security is added if we restart our application it will directly go to login page.
+
+Whatever the url we give that hits our applicsation it will go to login page. Only once we login it will be redirected to the specific page.
+If we don't give password it woill generate a default password.
+
+When we want to store usernames and passwords we will make use of LDAP or a database
+
+User.withDefaultPasswordEncoder()  
+		.username("in28minutes")
+		.password("dummy")
+		.roles("USER","ADMIN")
+
+
+Spring Security also provides with logout method by default.
+
+We can encode the passwrod using encode method in BCrpytpasswordencoder.
+withDefaultPasswordEncoder is deprecated so instead of this we will use BCrpytpasswordencoder.
+Function<String, String> passwordEncoder = input -> passwordEncoder().encode(input);
+
+				  User.builder()
+				.passwordEncoder(passwordEncoder)
+				.username(username)
+				.password(password)
+				.roles("USER","ADMIN").build() ;
+
+public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder() ; //It is an implementation of password Encoder that uses Bcrypt  stronghashing function
+		
+	}	
+
+To get the username who is logged in we use something called SecurityContextHolder which have a method called getContext which internally has a method called getAuthentication which gives us the user logged in.
+SecurityContextHolder.getContext().getAuthentication() ;
+
+Using Spring security all urls are protected
+A login form is shown for unauthorised users.
+
+In case h2-console should be used without the login form we need to disable something called CSRF(Cross side request forgery) in spring security
+
+SecurityFilterChain - Whenever a web request comes in it will be processed by this securityfilterchain
+Whenever the user enters a url the user will be redirected to login page this is done by the securityfilterchain
+When we override SecurityFilterChain we need to define entire chain again
+
+Httpsecurity allows us to configure web based security.
+
+http.formLogin(withDefaults())  - it is used to create a login form and withdefaults is from customizer class. learn about customizer
+
+http.csrf().disable() ; - to disable csrf

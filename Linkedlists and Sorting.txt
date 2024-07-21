@@ -1,0 +1,349 @@
+Linked lists and sorting
+
+For a linkedlist we will have need to pass a value for creating a linkedlist, appending,prepending or inserting a value
+For all these actions we need to create a node.
+So instead of  writing it seperately the code for creation of a node we can write it in one class called Node
+
+class Node{
+int value; //Value is the value we need to insert
+Node next; //Next is the pointer to the next node i.e., next can point to a node
+
+Node(int value){  //We are declaring a constructor and assigning the current reference value to it
+this.value=value;
+}
+}
+
+class LinkedList{
+private Node tail;
+private Node head;
+private int length;
+public LinkedList(int value){
+Node newNode = new Node(value); //We are creating a new Node by instantiating Node class and passing value to its constructor
+//We are pointing the newnode to the node we created
+head = newNode ; //head is pointing to the same thing that newNode is pointing to
+tail=newNode;
+length=1;
+}
+}
+
+LinkedList myLinkedList = new LinkedList(4) ; // We will create a linkedlist like this
+
+To print the linkedlist we can write below code
+public void printList(){
+Node temp = head;
+while(temp!=null)
+{
+s.o.p(temp.value);
+temp=temp.next;
+}
+}
+
+appending code
+For appending first we are creating a new node and then checking if the linkedlist is emopty
+if it is empty then we arre pointing both head anfd tail to the newNode
+if there are vvvalueswe are pointing the next of tail to the newNode and the tail to the newnode
+public void append(int value){
+Node newNode = new Node(int value);
+if(tail==null||head==null)
+{
+head=newNode
+tail=newNode
+}
+else
+{
+tail.next=newNode ;
+tail=newNode;
+}
+
+Removinng last element
+Check if list is empty
+If the list is having values then we need to have 2 variables pre and temp.
+Initially both will point to head node.
+If the temp.next!=null i.e., if the node is not the last element we are making pre to temp and temp to temp.next until temp reaches last element
+after looping as pre will be prior to the temp node we need to point the tail node to pre node and tail.next to null
+public Node removeLast(){
+if(head==null||if tail==null) return null;
+Node pre =head;
+Node temp=head;
+while(temp.next!=null)
+{
+pre =temp;
+temp=temp.next;
+}
+tail=pre;
+tail.next=null;
+length--;
+if(length==0) //We are checking the length again to confirm the linked list has onlyh 1 element  in the list. if it has only 1 element and if we 
+decrrement it then the length will be 0 and there will be no elements so that head and tail will be pointing to null
+{
+head=null;
+tail=null;}
+
+return temp; // We are retruning the removed Node
+
+To add a newnode at the beginning
+
+public void prepend(int value){
+Node newNode = new Node(value);
+if(head==null || tail==null)
+{
+head=newNode
+tail=newNode
+}
+else{
+newNode.next=head;
+head=newNode;
+}
+length++;
+}
+
+
+To remove a node from beginning pf the list
+
+public Node removeFirst(){
+if(head==null || tail==null)
+{
+return null;
+}
+temp=head; //We are storing the variable of which we are going to delete in a temporary variable
+head=head.next; // We are pointing the head node to its next node
+temp.next=null; // We are making the pointer of the first node we are going remove as null
+length--;
+if(length==0)
+{
+tail=null
+}
+return temp;
+
+To get a node at a particular index
+public Node get(int index){
+if(index<0||index>length)
+return null;
+for(int i=0;i<index;i++)
+{
+temp=temp.next;
+}
+return temp;
+}
+
+Update value of a node
+public boolean set(int index,int value)
+{
+Node temp =get(index) ; we are using get method here
+if(temp!=null)
+{
+temp.value=value;
+return true;
+}
+return false;
+}
+
+Insert newnode at a particularindex
+public boolean insert(int index,int value)
+{
+if(index<0||index>length)return false;
+if(index==0){
+ prepend(value)
+ return true;
+ }
+ if(index==length)
+ {
+ append(value);
+ return true;
+ }
+ Node newNode = new Node(value);
+ Node temp = get(index-1);
+ newNode.next=newNode.next;
+ temp.next=newNode ;
+ length++;
+ return true;
+ }
+ 
+ 
+ Remove a node at a particularindex
+ public Node remove(int index)
+ {
+ if(index<0||index>length)return null;
+if(index==0){
+ return removeFirst();
+ }
+ if(index==length-1)
+ {
+
+ return removeLast();
+ }
+ 
+ Node pre = get(index-1);
+ Node temp = pre.next;
+ pre.next=temp.next;
+ temp.next=null ;
+ length--;
+ return true;
+ }
+ 
+ 
+ Reverse a linkedlist  //Check this video again
+ public void reverse(){
+ Node temp =head;
+ head =tail;
+ tail = temp;
+ Node before =null;
+ Node after = temp.next;
+ for(int i=0;i<length;i++)
+ {
+ after = temp.next;
+ temp.next=before;
+ before=temp;
+ temp=after;
+ }
+ }
+ 
+ 
+ 
+ Bubblesort
+ In bubblesort inn first iteration we will move the largest ekement to the end after doing length-1 comparisions 
+ In second iteration we will have n-1 elements to sort and in this again the largest element will go to n-1 position
+ public class BubbleSort {
+
+    public static void bubbleSort(int[] array) {
+        for (int i = array.length - 1; i > 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (array[j] > array[j+1]) {
+                    int temp = array[j];
+                    array[j] = array[j+1];
+                    array[j+1] = temp;
+                }
+            }
+        }
+    }
+
+ 
+ 
+ SelectionSort
+ public class SelectionSort {
+
+    public static void selectionSort(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            int minIndex = i;
+            for (int j = i+1; j < array.length; j++) {
+                if (array[j] < array[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            if (i != minIndex) {
+                int temp = array[i];
+                array[i] = array[minIndex];
+                array[minIndex] = temp;
+            }
+        }
+    }
+
+
+Insertionsort
+
+public class InsertionSort {
+
+    public static void insertionSort(int[] array) {
+        for (int i = 1; i < array.length; i++) {
+            int temp = array[i];
+            int j = i - 1;
+            while (j > -1 && temp < array[j]) {
+                array[j+1] = array[j];
+                array[j] = temp;
+                j--;
+            }
+        }
+    }
+
+
+Merge sort will take 2 sorted arrays and combine them into a single sorted array. This is a  helper method to merge sort
+ public static int[] merge(int[] array1, int[] array2) {
+        int[] combined = new int[array1.length + array2.length];
+        int index = 0;
+        int i = 0;
+        int j = 0;
+        while (i < array1.length && j < array2.length) {
+            if (array1[i] < array2[j]) {
+                combined[index] = array1[i];
+                index++;
+                i++;
+            } else {
+                combined[index] = array2[j];
+                index++;
+                j++;
+            }
+        }
+        while (i < array1.length) {
+            combined[index] = array1[i];
+            index++;
+            i++;
+        }
+        while (j < array2.length) {
+            combined[index] = array2[j];
+            index++;
+            j++;
+        }
+        return combined;
+    }
+
+Merge Sort
+In merge sort we will break the array into equal parts until the base list size is 1 and past the parts to merge method.
+In previous algorithms we are sortingg the array in place whereas in merge sort we will store the sorted array in new array.
+public static int[] mergeSort(int[] array) {
+        if (array.length == 1) return array;
+
+        int midIndex = array.length/2;
+        int[] left = mergeSort(Arrays.copyOfRange(array, 0, midIndex)); // Wwe are dividing until the length of each split is 1
+        int[] right = mergeSort(Arrays.copyOfRange(array, midIndex, array.length));
+
+        return merge(left, right); // We will send single elementsa as 2 arrays 
+    }
+
+
+qUICKsORT
+In Quicksort initially pivot will be the first element. After that using that first element we will compare the etire array.
+If any element is greater than pivoit then no action required.
+If element is less than pivot we need to swap the element which is greater than pivot with the element which is lower than pivot.
+After its done pivotelement position will be same but elements less than pivot will come to left side whereas elements greater than pivot will move
+to the rightside.
+After this is done we will swap pivot with the last element which is less than the pivot so that all the elements less than pivot element will be
+left oof pivot where as elements greater than pivot will move to the right of the pivot element and pivot element will be in its position.
+Below is the code for that
+First we need to write code for pivot index value
+ private static void swap(int[] array, int firstIndex, int secondIndex) {
+        int temp = array[firstIndex];
+        array[firstIndex] = array[secondIndex];
+        array[secondIndex] = temp;
+    }
+
+
+    public static int pivot(int[] array, int pivotIndex, int endIndex) {
+        int swapIndex = pivotIndex;
+        for (int i = pivotIndex + 1; i <= endIndex; i++) {
+            if (array[i] < array[pivotIndex]) {
+                swapIndex++;
+                swap(array, swapIndex, i);
+            }
+        }
+        swap(array, pivotIndex, swapIndex);
+
+        return swapIndex;
+    }
+
+After getting the pivot index we will run quicksort algorithm again on the elements before the pivotindex element and after the pivotindex elements
+seperately.
+
+
+    private static void quickSortHelper(int[] array, int left, int right) {
+        if (left < right) {
+            int pivotIndex = pivot(array, left, right); //Here we are calling pivot method to get the pivotindexvalue and once the array is sorted based on pivotIndex
+			//we are recursively calling this function to again sort the remaining elements
+            quickSortHelper(array, left, pivotIndex-1);
+            quickSortHelper(array, pivotIndex+1, right);
+        }
+    }
+
+    public static void quickSort(int[] array) {
+        quickSortHelper(array, 0, array.length-1);
+    }
+

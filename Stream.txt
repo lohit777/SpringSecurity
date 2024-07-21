@@ -1,0 +1,64 @@
+Stream
+
+Integer[] arr = [1,5,10,12,6];
+List<Integer> list = Arrays.asList(arr) ;
+
+list.stream().sorted(Collections.reverseOrder()).skip(2).limit(1).forEach(System.out::println);
+
+sorted will sort the list in ascending order. But if we want to sort it in reverse order we can use reverseOrder() function which is present in collections.
+Skip will skip the ffirst 2 elements in the list and give us the remaining values
+Limit will limit the number of values to get in the stream
+
+int op = list.stream().sorted(Collections.reverseOrder()).skip(2).limit(1).findFirst().get();
+System.out.println(op) ;
+
+This will also give the 2nd highest  number but if there are duplicates to filter it we can use distinct
+
+int op = list.stream().sorted(Collections.reverseOrder()).distinct().skip(2).findFirst().get();
+System.out.println(op) ;
+
+
+To get sum of all integers in a list
+Optional<Integer> sum =	list.stream().reduce((a,b) ->a+b) ;
+System.out.println(sum.get()) ;
+
+To get average of all integers in a list
+double avg = list.stream().mapToInt(e->e).average().getAsDouble();
+System.out.println(avg) ;
+We need to map all the integers in the list to Int using mapToInt method and for that we need to implement a average function
+
+Integer[] arr = {1,5,10,12,6,15,3,15};
+List<Integer> list = Arrays.asList(arr) ;
+
+Set<Integer> set = list.stream().filter(i -> Collections.frequency(list, i) > 1) .collect(Collectors.toSet()) ;
+                System.out.println(set);
+
+Here we are trying to get duplicate elements in a list and storing in  set. With this we will get the duplicate elements.Collections.frequency method gives us the number of times a particular item is repeated in a set and we are collcting it into a set
+
+Integer[] arr = {1,5,10,12,6,15,3,15,3,5,};
+List<Integer> list = Arrays.asList(arr) ;
+
+long count = list.stream() .filter(i -> Collections.frequency(list, i) > 1)
+                .count() ;
+                System.out.println(count);
+To get total count of duplicates we can use above
+
+
+List<Integer> list1= list.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
+System.out.println(list1);
+
+
+IntStream.range(1,n+1).map(i->i*i*i).boxed().collect(Collectors.toList()) ;
+
+   List<String> list = List.of("banana", "apple","pineapple") ;
+	  String largest = list.stream().sorted(Comparator.comparing(String::length,Comparator.reverseOrder())).findFirst().get() ;
+	  System.out.println(largest) ;
+	  
+	  
+	  List<String> strings = List.of("Hello", "World", "Java", "Programming");
+
+        // Convert list of strings to a single string separated by underscore using stream
+        String result = strings.stream()
+                              .collect(Collectors.joining("_"));
+
+The output will be Hello_World_Java_Programming

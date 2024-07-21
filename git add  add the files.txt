@@ -1,0 +1,228 @@
+git add // add the files
+
+after adding commit. It will not move to the github. 
+It will be pushed to github only when we use push command
+
+main/master branch -> It will be have prod code
+
+create another branch in github
+
+git checkout 
+
+git remote add origin "url from the git" -> This is used to push the local files in git to remote repository in git
+
+git push origin master -> to move the local files from git to the master branch in git
+
+Github actions
+It is a platform to automate developer workflows
+CI/CD is one of the workflow whcich is used to automate developer workflows
+
+With github actions whenever something happens in or to your repository you can configure automatic actions to be executed in response
+Things that are happenning from or to your repository are github events
+
+When you create a pull request is an event when a conntributor is joined is an event.
+When you integrate other apps is an event, when a issue is created and you assign to a contributor is an event
+
+For ex a issue is createds and you want to assign it to contributor/yourself and you want to reprodroduce it and add comment reproducible/not 
+You can automate these things
+Each thing or the flow of things are actions and the entire chain of actions is a workflow
+
+Most common workflow for your repository will be CI/CD
+
+You commit your code the build starts it tests your code and builds it into an artifact and then pushes the artifact into some storage and then
+deploys the application on a deployment server
+
+Advantage of github actions 
+You can use same tool for CI/CD pipeline instead of third party integration 
+Github actions makes it really easy to build pipeline
+It is a tool for developers so you don't need extra devops person dedicated to setup 
+
+If you have a node application to deploy it you don't need to install a node. You just need to connect to the target environment and deploy 
+your application there.
+This is the advantage you have when using CI/CD pipeline in github actions
+
+Under github actions we will have mutiple workflows for different technologies/ and for deployments/Also programming languages which you want to use
+You will have build and test as well as publish workflows
+
+We can automate a greeting message for any new contributor who joins the project etc.
+We can select workflow based on our need
+If we select java with gradle there will be pre-configured logic inside the yaml files
+
+
+A example yml file for Java with Maven
+
+# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+
+name: Maven Package
+
+on:
+  release:   // We will have events here like if we want to push a request pull  a request such things. Each event will trigger a workflow
+    types: [created]
+
+jobs:  //It basically groups set of actions that executes
+  build:
+
+    runs-on: ubuntu-latest  //It will have 3 categories Ubuntu,Macos and Windows
+. If the application runs on all 3 operating systems we can run it on 3 OS by configuring below
+		strategy:
+		matrix: //It is  used when we want to use multiple operating systems or multiple java versions
+			os:[ubuntu-latest,Winfdows-latest,macOs-latest]
+    permissions:
+      contents: read
+      packages: write
+ steps:  //Events trigger a chain of actions and those are defined in steps
+    - uses: actions/checkout@v3  //Under path actions/ the reusable code is present . This is used to checkout
+    - name: Set up JDK 11  //It will install java version 11
+      uses: actions/setup-java@  // Uses selects an action
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+    - name: Build with Maven
+      run: mvn -B package --file pom. //run will run a linux command
+    - name: Publish to GitHub Packages Apache Maven
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+		
+We have a docker build and push action to build docker image 
+
+https://github.com/marketplace/actions/build-and-push-docker-images - build and push action 
+
+You can set your secrets to login to docker registry through github in settings-> secrets and in the secrets you can give DOCKER_USERNAME and 
+DOCKER_PASSWORD
+You can access it using 
+username:${{secrets.DOCKER_USERNAME}}
+password:${{secrets.DOCKER_PASSWORD}} in yaml file
+
+https://www.youtube.com/watch?v=R8_veQiYBjI
+		
+		
+		
+The entire workflow  in github actions gets executed on github servers but you can also setup your github server by your own 
+Whenever you try to execute a workflow and when the job runs for each job it will run a new server.
+One job will run on one server by default
+If there are multiple jobs to run they will run in parallel by default.
+
+We can also overrride default parrallel execution by giving below statement
+
+publish : 
+	needs : build  //This means publish job runs only after completion of build job
+	
+	
+github is a online platform where we can host our code
+Git is a tech and there are many online platforms which help tio host our code in git like bitbucket,gitlab,github
+Git is a version control system
+Terminal basically allows to change the folder structure.
+Git history will be stored in git repository which is .git
+
+git init will create the git trepo and it will be hidden. All the files starting with . will be hidden.
+once you initialise git repo all the changes done by you till now will be stored inside the repo.
+
+git status will have all the changes done to your project and not in your reposiitory. No one knows sabout it like who added the file when it is added.
+We will have all the untracked files and the files which are yet to be committed under git status.
+If we want our file to be tracked we need to give the command git add "filename" -> if we give like this the file will be added to the folder and 
+it will be tracked under git status but it will not be committed yet.
+
+To commit the chsanges totally we will use git commit -m "comment needs to be given" -> Here -m is message
+
+cat filename -> it will give the details in the file
+If you dont want to commit your changes after adding the file(i.e., move to the staging environment) you can give below command
+git  restore staged --"filename"
+
+git log will have the history of your repository
+
+rm -rf "filename" - to delete file
+
+If you want to uncommit a change then you need to copy the commit hashcode until which you have committed and then give
+git reset "hashcode of the commit until which you made changes"
+It will restore the changes of that particular commit which we are trying to restore
+
+To create a file touch filename
+
+If you have added the changes to staging environment using git add but haven't committed  but you don't want those changes to be seen and
+use those changes at a later point in time.
+Then you can use git stash command.
+To get back those changes you can use git stash pop.
+If you dont want to use those changes which are in the stash even in the future use git stash clear so all the changes will be gone you cannot use it 
+again.
+
+git remote add origin "githuburl where we want to host our project"
+remote means you are working with urls add means you are adding a url 
+origin means the name of the url you are going to add.
+All the repositories and folders that are in your personal account they have a name called origin
+
+git push origin master -> To push our changes from our local git repo to the github.com. This will push the changes from local to the github url
+which we provided.
+
+All the commits which we make  will be pushed  to the main branch.
+Whenever you are trying to resolve a bug make sure to create a seperate branch instead of pushing it to the main branch.
+The final code without any errors will be in main branch
+All the code that is not finalised should  go to different branch.
+
+git branch feature -> It will create a new branch called feature
+To go to this branch you need to give git checkout feature
+When you give this one more command will be executed git checkout feature. Now all the changes will be committed to the feature branch
+If you need to change to main branch you can give git  checkout main.
+
+If you want to merge the changes done in feature branch to main branch you can give git merge feature so that all the code in main branch will be 
+moved to the feature branch
+
+If we dont have access to a particular github project you can go to github and click on fork for that particular project so that it will create access
+copy of that project in your personal github.
+
+Now if you want to get that code to your local to make changes you can click on git clone "github url whichh you copied" 
+
+The original project from where you forked is the upstream 
+git remote add upstream "githuburl of the upstream project" It will be added to your remote
+
+Whenever you make changes in your personal copy to make it visible in the main branch you need to request a pull request
+
+If a branch already has a pull request it will not allow to add a new pull  request. All the commits will be added to that  pull request only.
+We can open new pull requests only for new branches.
+To create a new branch and push the changes to it we need write below commmands
+git branch newbranch
+git checkout newbranch
+git push -u origin newbranch // before this we need to add a remote  git remote add origin "githuburl where we want to host our project"
+
+To force push a change to github git push origin newbranch -f
+When you want to delete a commit you will give git restore "hashof the commit" in the terminal but the commit will not be deleted in the github.
+So to delete the commit even in github we need to force push the changes
+
+Now whenn you  forked and made changes in a seperate branch in your local community and raised pull request to move those changes to the upstream(from where you
+forked) main branch then the main branch in your local and in upstream commits will not be in sync. This is because you committed changes to a seperate
+branch in your github repository.
+To make both the commits in sync you need to checkout to your main branch in your local
+git checkout main
+Then use below command git fetch --all --prune -> This fetches the commits from upstream main branch
+After this we need to reset the main branch of our reposiitory to the main branch of the upstream.
+git reset --hard upstream/main
+git push origin main
+
+Instead of the above you can also use below single command
+git pull upstream main - with this main branch of both your local and the upstream will be in sync.
+After that you need to sync the origin url like below 
+git push origin main
+
+you can also do it in github by clicking on fetch upstream button.
+
+you can squash multiple commits into a single commit.
+For example you have 4 commits above a commit which is already completed then you need to give below command 
+The commithashname is the commit which is already done and i is interactive session
+git rebase -i "commithashname"
+After this you will get all the commits which are yet to be committed having pick beside it.
+If you want to squash 2 commits give pick for the upper commit and s for the below commitso the lower commit will be squashed to the upper commit 
+which we gave and both the commits will be in single commit.
+Pick is the commit whihc you want 
+Squash means you need to squash this commit with a commit above itgi so both the commits will be under single commit.
+To exit out of this give Escape :x
+After that it will allow to add a new message to all the commits
+
+merge conflicts
+
+copy NUL EmptyFile.txt - to create a empty file in command prompt in windows
+type gitdemo.txt - it will gice the content of the file inside windows terminal
+

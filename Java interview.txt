@@ -1,0 +1,659 @@
+Difference between Method Overriding and Method overloading
+
+Method overriding: 2 different classes with inheritance relationship same method same parameters. Run time polymorphism
+
+Method overloading : same class same method name increase in parameters. Compile time polymorphism.
+
+Differnce between abstract class and interface
+
+While encapsulation is the process or method to contain the information into a single unit and providing this single unit to the user.
+Main feature: Data hiding. It is a common practice to add data hiding in any real-world product to protect it from external world.
+ In OOPs, this is done through specific access modifiers.
+ Java Encapsulation is a way of hiding the implementation details of a class from outside access and only exposing a public interface
+ that can be used to interact with the class
+In Abstraction we will only show essential things to end user and simplify the class.
+Abstraction hides the code complexity.
+Other things wilkl be implemented in child class
+Abstract class will have both abstract methods as well as concrete methods
+Abstract methods are those which don't have implementation but the child class implements it.
+A class implementing a abstract class should implement all the abstract methods in it or else the child class will
+also be considered as a abstract class.
+
+Interface will have only abstract methods i.e., method without implementation but from java 8 it also implements default and static methods.From Java 8 implementing multiple interfaces with same method is not allowed like below. 
+It we are implementing 2 interfaces which have same methods then we need to explicitly specify from which method we need to implement the interface or else we need to override the methods.
+
+public interface Floatable {
+    default void repair() {
+    	System.out.println("Repairing Floatable object");	
+    }
+}
+
+public interface Flyable {
+    default void repair() {
+    	System.out.println("Repairing Flyable object");	
+    }
+}
+
+public class ArmoredCar extends Car implements Floatable, Flyable {
+    // this won't compile
+}
+In this case as both the interfaces are implementing same methods and we are implementing both the classes it won't compile.
+
+public interface Floatable {
+    int duration = 10;
+}
+Copy
+public interface Flyable {
+    int duration = 20;
+}
+Copy
+public class ArmoredCar extends Car implements Floatable, Flyable {
+ 
+    public void aMethod() {
+    	System.out.println(duration); // won't compile
+    	System.out.println(Floatable.duration); // outputs 10
+    	System.out.println(Flyable.duration); // outputs 20
+    }
+}
+This compiles as we are using object name.
+
+String is immutable. Value of string can't be changed but its reference can be changed.
+String s = new String("Lohit"); Memory will be stored in heap
+String s = "Lohit" ; Memory will be stored in String pool
+String Buffer is synchronized i.e., thread safe. Multiple threads can't call the methods of StringBuffer simultaneously.It is less efficient
+StringBuilder is non-synchronized i.e., not thread safe. Multiple threads can call the methods of StringBuffer simultaneously.It is more efficient
+
+Functional Interface -> Interface with only one abstract method. It can have any number of default and static methods. They can have only one functionality to exhibit.
+From Java 8 we can call lambda expressions as instance of functional interface
+Ex- Runnable Comparable
+
+Lambda expression
+If we have only one method in a class we can use lambda expression to implement it.They cannot contain variables,expressions or if,else statements.If the lambda expression needs to return a value, then the code block should have a return statement.
+
+Syntax: (parameter1, parameter2) -> { code block }
+To use a lambda expression in a method, the method should have a parameter with a single-method interface as its type
+
+Java 8 features: Date Time API, Stream  api, Functional interfaces, Lambda expressions, Default method in interfaces,Annotations, forEach, default methods,Iterable interface, Stream filter,Java 8 Stream
+ 
+Java 8 Stream
+Stream API is a way to express and process collection of objects
+It enables us to perform mapping, filtering, reducing and sorting.
+We have 2 types of operations in stream API.
+Intermediate and Terminal operations.
+Intermediate operations transforms one stream to other stream.It enables concept of filtering where one method filters data and transforms into another method.
+map,filter and sorted are type of intermediate operations.
+
+Map ->The map method is used to return a stream consisting of the results of applying the given function to the elements of this stream.
+
+List number = Arrays.asList(2,3,4,5);
+List square = number.stream().map(x->x*x).collect(Collectors.toList()); -> this will return a stream by squaring each number in the stream and collect and keep it in a list Here collect is a termination operation
+
+filter-> List names = Arrays.asList("Reflection","Collection","Stream");
+List result = names.stream().filter(s->s.startsWith("S")).collect(Collectors.toList()); - > it filters the stream and collects the resulkt in a list.
+
+sorted()
+The sorted method is used to sort the stream.
+List names = Arrays.asList("Reflection","Collection","Stream");
+List result = names.stream().sorted().collect(Collectors.toList());
+
+
+Important Terminal Operations
+There are a few Terminal Operations mentioned below:
+
+1. collect()
+The collect method is used to return the result of the intermediate operations performed on the stream.
+
+List number = Arrays.asList(2,3,4,5,3);
+Set square = number.stream().map(x->x*x).collect(Collectors.toSet());
+2. forEach()
+The forEach method is used to iterate through every element of the stream.
+
+List number = Arrays.asList(2,3,4,5);
+number.stream().map(x->x*x).forEach(y->System.out.println(y));
+
+3. reduce()
+The reduce method is used to reduce the elements of a stream to a single value. The reduce method takes a BinaryOperator as a parameter.
+
+List number = Arrays.asList(2,3,4,5);
+int even = number.stream().filter(x->x%2==0).reduce(0,(ans,i)-> ans+i);
+
+Example for creating a list of integers
+// create a list of integers
+        List<Integer> number = Arrays.asList(2, 3, 4, 5); 
+
+foreach loop
+In foreach loop we will not intialise counter variable.
+Syntax: 
+
+for (type var : array) 
+{ 
+    statements using var;
+}
+
+foreach example
+ // array declaration 
+  
+        int ar[] = { 10, 50, 60, 80, 90 }; 
+  
+        for (int element : ar) 
+  
+            System.out.print(element + " "); 
+
+it is same as
+
+for (int i=0; i<arr.length; i++) 
+{ 
+    type var = arr[i];
+    statements using var;
+}
+
+Exceptional Handling
+Exception Handling in Java is one of the effective means to handle runtime errors so that the regular flow of the application can be preserved. 
+Types of Excpetions
+Built-in exceptions
+	checked - Compile time exceptions  ex: ClassnNotFoundException,InterruptedException,IOException,FileNotFoundException
+	Unchecked - If a program throws an unchecked exceptions even if we don't handle it the program will not give an compilation error. Ex: Arithemtatic,ArrayIndexoutofBound,Classcast,NullPointer
+User Defined exceptions - Users will create exceptions called user defined exceptions
+
+Throw keyword : Explicitly throw an exception
+Throws keyword :It is also used to handle a checked exception. Instead of try catch if we know a particular class throws an exception to handle it we can use "throws excpetionname" for the method
+Java throws keyword is used in the method signature to declare an exception which might be thrown by the function while the execution of the code.
+We are giving responsibilty to caller to handle exceptions using throws keyword.
+But it is not recommended
+Usage of throws doesn't gurantee that the codeoesn't end abnormally.
+It is just to convince compiler that we are handling exception.
+Every Exception in java is a class and it should be child class of throwable directly or indirectly i.e., extend throwable
+Throw is used for customised/user defined exceptions
+printstacktrace method internally used to throw message about your exception
+For unchecked exception try catch is not required to compile the class
+try with resources
+If we open a resource as part of try block it should be closed as part of finally block before try with resources came
+resources are like database connection files
+You should close the resource for sure in finally block which you opened in tryblock
+With try with resources we need not close the resources explicitly it will be cloased automatically
+The resource should implement java.lang.autocloseable. Autocloseable consists of close method
+we don't need to explicitly close the resource using try with resources.
+Resource reference variables are by default final
+You can take n number of resources in try with resources
+catch is not mandatory when used try with resources
+We can write multiple exceptions in one catch block from java 1.7
+Collections:
+Any group of individual objects which are represented as a single unit is known as collection of objects.
+
+List
+It provides a way to store ordered collection.It preserves insertion order so it allows positional access and insertion of elements.
+It allows dupliicates.
+With ListIterator we can iterate forward and backward.
+public interface List<E> extends Collection<E> ; 
+Syntax:
+List<Obj> list = new ArrayList<Obj> (); 
+Multiple null values can be stored 
+Example code in https://www.onlinegdb.com/online_java_compiler#
+
+List is a interface and it is implemented using Arraylist snd linkedlist classes.
+List contains ordered set of elements. It allows duplicates and nulls
+Linkedlist is a linear data structure where every element is a seperate object with a data part and adress part.
+List<String> words = List.of("Apple","bat","cat") ;
+words.size();
+List  is immutable
+
+Vector is syncrhonized but Arraylist is not
+ArrayList
+Arraylist is useful where lots of manipulation is needed. It provides dynamic array(size modification) even though it is slower than array.
+Duplicates and nulls are Allowed. Insertion order is preserved. We can easily access the elements in Arraylist
+It is not thread safe.It increases memory usage.Slower than arrays.
+
+LinkedList
+Dynamic size, increases or decreases the size based on the elements added.It is easy to insert and delete elements in between as we only need to change the link.
+Linkedlist has a lower performance than arraylist because in arraylist you can access elementusing index whereas in linkedlist you need to traverse through the entire list. Linkedlist requires more memory than arraylist because each element requires additional memory for the links to its predecessors and successors.
+
+Queue(FIFO) interface
+It is only used to insert elements at the end of the list and delete at the start. Priorityqueue.ArrayDeque,PriorityBlockingQueue and linkedlist implements queue interface
+PriorityBlockingQueue is thread safe
+Queue preserves order and few implementations of queue are thread safe.
+Queue provides limited functionality. Few of the implementations in Queue are size restricted
+
+Deque Interface
+It is a double ended queue. It can either be used as a queue or a stack(LIFO)
+It is a subset of Queue interface. Elements can be added or deleted from both the ends.It is useful when you want to add/remove elements from both ends.
+ArrayDeque is one of its implementations. It is faster than stack when usead as a stack and faster than queue when used as a queue.
+
+ArrayDeque Class
+It implements Deque and Queue interface. It provides constant time performance for inserting and removing elements from both ends of the queue making it good choice to use for many add and remove operations. 
+It is not synchronized but we can make it thread-safe using Collections.synchronizedDeque method.Nulls are not allowed in arraydeque
+Deque<Integer> deque = new ArrayDeque<>();
+    deque.addFirst(1);
+    deque.addLast(2);
+Although the ArrayDeque class uses a resizable array to store its elements, it still has a limited capacity, which means that you may need to create a new ArrayDeque when the old one reaches its maximum size.
+by default arraydeque holds 16 elements.
+
+Sety Interface:
+ Duplicates cannot be stored and it is an unordered collection of objects.It implements the mathematical set.
+SortedSet and Navigableset Extends set implementation.
+Hashset and LinkedHashSet classes implements set Interface.
+
+Set performs math set operations like union and Intersection. It doesn't allow duplicates.
+Insertion order is not preserved in Set. Internally for every element a hash is generated and values are stored with respect to the generated hash,the values are compared and stored in asscending order.
+Classes that implement Set Interface:
+HashSet,EnumSet,LinkedHashSet,TreeSet
+
+HashSet Class
+It is an inherit implementation of HashTable data structure.The objects are inserted based on their hashcodes.Null values are allowed.
+The class also offers constant time performance for the basic operations like add, remove, contains, and size assuming the hash function disperses the elements properly among the buckets.
+HashSet also implements serializable and cloneable interface.Before storing an Object, HashSet checks whether there is an existing entry using hashCode() and equals() methods.
+All the classes of the set interface  are internally backed up by map interface.Hashset also uses hashmap to store its objects internally.
+To enter a value in HashMap we need a key-value pair, but in HashSet, we are passing only one value. 
+
+Storage in HashMap: Actually the value we insert in HashSet acts as a key to the map Object and for its value, java uses a constant variable. So in the key-value pair, all the values will be the same.
+Default intialcapacity is 16 for hashmap
+Intialcapacity : number of buckets when hashtable is created.
+LoadFactor: how full the hashset can get before the size increases automatically.
+
+InitialCapacity and loadfactor are 2 main factors that affect the performance of hashset operations.A load factor of 0.75 provides very effective performance with respect to time and space complexity. If we increase the load factor value more than that then memory overhead will be reduced (because it will decrease internal rebuilding operation) but, it will affect the add and search operation in the hashtable. To reduce the rehashing operation we should choose initial capacity wisely. If the initial capacity is greater than the maximum number of entries divided by the load factor, no rehash operation will ever occur.
+
+Hashset is slower than hashmap. Hashset internally uses hashmap but even though hashmap uses key value pair in hashset we will pass only one value to insert. Internally Java takes the value we pass as a key and the value part will be generated by java itself and a key value pair will be formed.
+Hashset is faster than treeset.Elements in hashset are not ordered.
+It takes constant time for search,insert and delete operations.HashSet uses equals() method to compare between 2 objects to not allow duplicates.
+
+LinkedHashSet:
+It is a ordered version of HashSet that maintains a doubly-linked list across all elements.
+It extends hashset and implements Set. Duplicates are not allowed. If insertion order is required LinkedHashSet is used.
+LinkedHashSet lets us iterate through the elements in the order they were inserted.
+Both LinkedHasMap and LinkedHashSet have additional associated costs both in terms of spending additional CPU cycles and needing more memory. If insertion order is not required
+ then use HasMap and HashSet.
+
+SortedSet Interface
+Navigable Set extends SortedSet and TreeSet implements Navigable Set.
+All elements of a SortedSet implements compareable interface(or be accepted by the specified Comparator) and all such elements must be mutually comparable. Mutually Comparable simply means that two objects accept each other as the argument to their compareTo method.
+Null and duplicate values are not allowed in SortedSet.
+Insertion order is not preserved in Treeset.for every element the values are compared and sorted in ascending order.
+
+NavigableSet Interface
+It is same as SortedSet. It extends SortedSet and it has few extra Navigable methods.In navigable set we can also navigate the set in reverse order.
+
+Treeset class
+It implements sortedset. The ordering of the elements is maintained by a set using natural ordering whether or ot an explicit comparator is provided.
+It can also be orddered by a comparator provided at set creation time.
+TreeSet serves as an excellent choice for storing large amounts of sorted information which are supposed to be accessed quickly because of its faster access and retrieval time.
+If we are creating TreeSet of user defined classes or any Java classes which does not implements comparable interface we will get ClassCastException. to solve this problem we can either implement Comparable to our user defined class or we can pass Comparator object in Constructor while creating the set.
+The insertion of null values into a TreeSet throws NullPointerExc eption because while insertion of null, it gets compared to the existing elements, and null cannot be compared to any value.
+Add,remove and search takes O(n) time. Treeset is not synchronised. To synchronise it the set should be wrapped using the Collections.synchronisedSortedset method.
+TreeSet ts = new TreeSet(); 
+Set syncSet = Collections.synchronziedSet(ts);  
+We can't add heteregenous elements to treeset.
+
+Map Interface:
+It is not a subset of Collection interface.
+Maps are used for key value association mapping.
+A map of error codes and their descriptions.
+A map of zip codes and cities.
+A map of managers and employees. Each manager (key) is associated with a list of employees (value) he manages.
+
+A map cannot contain duplicate keys and each key can atmost map to one value.
+Example Hashmap
+ // Creating an empty HashMap 
+        Map<String, Integer> hm 
+            = new HashMap<String, Integer>(); 
+  
+        // Inserting pairs in above Map 
+        // using put() method 
+        hm.put("a", new Integer(100)); 
+        hm.put("b", new Integer(200)); 
+        hm.put("c", new Integer(300)); 
+        hm.put("d", new Integer(400)); 
+  
+        // Traversing through Map using for-each loop 
+        for (Map.Entry<String, Integer> me : 
+             hm.entrySet()) { 
+  
+            // Printing keys 
+            System.out.print(me.getKey() + ":"); 
+            System.out.println(me.getValue()); 
+
+SortedMap Interface:
+It is same as Map interfaced but it will provide total ordering of elements based on natural order of its keys.The sorting order is determined by the natural order of the keys, which must implement the java.lang.Comparable interface, or by a Comparator passed to the SortedMap’s constructor.
+Treemap implements sortedmap.Null value or null kkey is not permitted in treemap.
+It allows to retrieve elements in logarithmic time, making it useful in search algorithms where you need to retrieve elements quickly.
+It is slower than normal map to insert elements as it should be maintained in sortede order.
+The keys in a SortedMap must implement the java.lang.Comparable interface or a custom Comparator must be provided. This can be a restriction if you need to use custom keys that do not implement this interface.
+
+Navigable Map Interface
+It is same as SortedMap but it provides few extra navigation methods like loweKey,floorKey,ceilingKey etc.It also provides a way to create a submap.
+
+TreeMap Class:
+Implements both SortedMap and NavigableMap
+Adding, Removing and retrieving elements take O(n) complexity.
+Null keys are not allowed but nul values are allowed.
+The implementavtion of a TreeMap is not synchronized. This means that if multiple threads access a tree set concurrently, and at least one of the threads modifies the set, it must be synchronized externally. This is typically accomplished by using the Collections.synchronizedSortedMap method. This is best done at the creation time, to prevent accidental unsynchronized access to the set. This can be done as:
+
+SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...)); 
+We can retrieve elements quickly using treemap
+
+Hashmap class:
+It implements basic Map interface
+It is similar to hashtable but unsynchronised.
+Duplicates keys are not allowed but null key is allowed.It also implements cloneable and serialisable interface.
+Key in hashmap is valid if it implements hashcode and equals() method.It also should be immutable.Value can be any wrapper class,custom objects,arrays,any reference type or null.
+Hashmap provides fast access time i.e., insertion and retrieval takes O(1) time.Hashmap uses a hashing function to map keys to indices in an arrayy.
+Hashmap is not ordered, which means the order in which elements are added is not preserved.
+Its not thread safe. If thread safety is required concurrenthashmap can be used.
+Hashisg is used in Hashmap.Hashing is a technique of converting a large String to a small String that represents the same String. A shorter value helps in indexing and faster searches.
+HashMap will also have intialcapacity and loadfactor. We need to initialise it carefully. If initialCapacity is kept higher it increases the time complexity of iteration.
+Hashmap is useful when efficient implementation of search,delete and insert operations are required.Hashmaps can handle large datasets.
+
+Hash collision -> When multiple hash keys generate same hashcode it leads to hash collision
+All those hash keys will be stored in the same buckets
+Hash Reduction techniques :
+Chaining(Open hashing) - When 2 keys collide both the keys will be placed in the same bucket with the help of a linkedlist. Key value pairs will be stored
+as array of linkedlists.
+Deletion and insertion is easy constant time
+Searching takes O(n) time. and it takes exttrta memory
+
+Closed Hashing :
+linear probing :  The new key will be stored in next available bucket.
+No extra space is required
+Average case searching takes constant time worst case O(n)
+Quadratic probing -> this will be stored with the help of a formula. Formula is R + isquare modn -> R is the hashcode generated
+i is is the number of times you have checked for availability/also called collision number. n is the mod code
+Double hashing -> we will use 2 hashing techniques. One to store normal key value pairs and the 2nd one is to store in case of collisions
+
+
+LinkedHashMap class:
+same as hashmap just it preserves the insertion order.
+
+Comparable interface
+Comparable interface will have compareTo method and there will be default sorting technique.
+
+Comparator interface 
+It will have compare method and we can write our default sorting logic.
+
+Functional interface will have only one abstract method.
+Runnnable is a type of functional interface
+Comparable is also a functional interface
+
+Cloneable interface is  a marker interface which indicates that the class can be cloned.
+It has a clone() method which is used to create an exact copy of the object.
+The cloned object has its separate space in the memory where the copy of the original object is stored. 
+If you try to clone without implementing cloneable interface it throws clonenotsupportedexception
+
+Immutable class -> We need to declare the class as final
+There shouldn't be any setters
+All the content should be declared with private final
+Serialization is a mechanism of converting the state of an object into a byte stream. Serialization is done using ObjectOutputStream. Deserialization is the reverse process where the byte stream is used to recreate the actual Java object in memory. This mechanism is used to persist the object. Deserialization is done using ObjectInputStream. 
+The process of saving state of an pobject to a file is called serialisation
+but strictly speaking Converting an object from java supported form to file supported form/network supported form is serialisation.
+Fileoutputstream and objectoutputstream are required to achieve serialisation.
+ObjectOutputStream will take the object and convert into binary data
+Fileoutputstream will write the binary data to the file.
+we will use writeobject method to write the data into the file
+If you want to send an object through a network then we go with serialisation. 
+The process of reading the state of an object from a file is called deserialistation.
+but strictly speaking Converting an object from network supported form to java supported form is deserialisation.
+Fileinputstream and objectinputstream are required to achieve deserialisation.
+
+If the class doesn’t implement serialisable it will throw runtime exception
+
+Fileinputstream will read the binary data from the file.
+ObjectinputStream will take the binarydata and convert into object
+Marker interface is an interface that doesn’t have any methods or constants inside it. It provides run-time type information about objects, so the compiler and JVM have additional information about the object.
+
+Transient
+Transient is applicable only for variables
+At the time of serialisation if we don't want to save the value of a particular variable  to meet security constraints then we should go for transient keyword
+At the time of serialisation JVM ignores original value of transient variables and save default value to the file.
+
+
+Static variables are not part of object state so they are not serialisable by default. So declaring static variable as transient is of no use.
+final variables will be participated in serialisation directly by their values instead of variables.
+So even if oyou declare final variable as a transient vaqriable there will be no impact
+A marker interface is also called a tagging interface.
+
+Multithreading
+We can create thread by extending thread class or Runnable interface.
+Both the classes will have run() method.We need to implement the run() method. Thread lifecycle will start when run() nmethod executes.
+Difference between thread class and Runnable interface is if we extend thread class we cannot extend any other class as java doesn't support multiple inheritance. 
+Whereas when we implement Runnable interface we can implement other interfaces also.
+To start a thread we need to invoke start method and start method internally invokes run method.
+Thread.sleep() stops the execution of the thread for a specified amount of time
+wait() method will wait until notify method is called
+wait(long timeout) -> it will wait until notify method is called or till timeout
+notify() is used to wake up a single thread.it is used to wake up only one thread to wakeup an object
+In Java, this is a reference variable that refers to the current object on which the method or constructor is being invoked.
+
+InterThread Communication
+The thread which is waiting for updation has to call wait methodf
+The thread which is reponsible for updation will call notify() method after updation. These methods are present in object class but not thread class
+This is because you will call wait and notify methods on java object but not on thread
+If a thread wants to call wait method on any object then thatthread should be owner of that object i.e. thed threadf should have lock of that object
+i.e., the thread shoiuld be inside synchronized area
+wait() notify() and notifyall() methods should be called only in synchronised area. If we call outside of synchronised area we will get exception
+If a thread calls wait method on any object immediately the thread releases the lock of the object and enters waiting state
+If a thread calls notify method on any object it releases the lock but not immediately
+Except wait notify notifyall methods threads doesn't rellease the lock anywhere
+
+Every wait method throws interruptedexception
+If a waiting thread got notification it will go to another waiting state but not running to get lock.
+If it gets lock it comes back to runnable state.
+
+wait belongs to object class. So it needed a object to work with whereas sleep belong to Thread class
+
+Lambda expression
+(parameters passed)-> function body
+
+We need wrapper classes because they create object references and collections accept only object references.
+
+Singleton design pattern is the one where we can instantiate the class only once.
+For singleton class we need to create a static instance in the class  and declare the constructor as private.
+We also need to create a static method that returns a reference to the instance.
+
+Ex:
+
+psvm()
+{
+A obj1 = A.getInstance();
+}
+
+class A{
+static A obj = new A(); //creating a static instance
+private A(){ //creating private constructor
+}
+public static A getInstance(){
+return obj ; // Returning the reference to the variable. How many times you instantiate the class the reference will be same.
+}
+
+If you want to create a object factory is the best design pattern.
+
+== and equals 
+Check comparator and comparable in eclipse
+
+Optional class is majorly meant to avoid null pointer exceptions
+
+Filter method in stream accepts a predicate which is a functional interface
+Predicate will have only one method called Test in it
+The Test method returns a boolean value back
+So, when we give a condition inside a filter then if the condition satisfies then it will return true and go to next operation else false
+
+forEach accepts a consumer interface and it has a accept methosd in it and returns back nothing.
+It will just accept the parameter and do some operation and consumes the parameter
+
+Map accepts a function functional interface and it has a method apply.
+Map takes one object as i/p and return another object.
+Apply method will take the i/p and performs the operation and returns back a stream object back
+
+Supplier -> no input but will get output. 
+It will not take input but return output
+It has get method in it.
+private singleton(){
+}
+static singleton obj;
+public static getInstance(){
+if(obj==null)
+{
+synchornized()
+{
+if(obj==null){
+obj = new Singleton();
+}
+
+
+psvm()
+{
+Singleton ref = ref.getinstance()
+  
+  
+ Transient variables prevent the object from serialisation.
+ 
+ The serialization process in Java transforms an Object code into a byte stream,
+ which can be copied from one Java Virtual Machine to another and recreated by deserialization.
+ 
+ De Serialization is the process of transforming the byte stream into a Java object in memory.
+ 
+ SOLID Principles in Java'
+ S -> Single Responsibility principle Each class should have a single responsibillity.
+ O-> Open closed principle -> Once a class is complete and has fulfilled its purpose, there may be a reason to extend that class but you should not modify it. 
+ Instead, you should use generalization in some form, such as inheritance or delegation, instead of modifying the source code.
+ The open-closed principle states that according to new requirements the module should be open for extension but closed for modification
+ Liskov substitution principle
+LSP, developed by Barbara Liskov, It applies to inheritance in such a way that the derived classes must be completely substitutable for their base classes. 
+In other words, if class A is a subtype of class B, then we should be able to replace B with A without interrupting the behavior of the program.
+Interface Segregation Principle
+The principle states that the larger interfaces split into smaller ones. Because the implementation classes use only the methods that are required.
+ We should not force the client to use the methods that they do not want to use.
+ do not force any client to implement an interface which is irrelevant to them
+ Dependency Inversion Principle
+The principle states that we must use abstraction (abstract classes and interfaces) instead of concrete implementations.
+ High-level modules should not depend on the low-level module but both should depend on the abstraction.
+ Because the abstraction does not depend on detail but the detail depends on abstraction. It decouples the software.
+ High-level modules should not depend on low-level modules. Both should depend on abstractions“. Additionally, abstractions should not depend on details. Details should depend on abstractions.
+
+Executors framework
+In a executors framework there is only one way to execute a task in a seperate thread of execution
+First we need to create a task that we want to run in a seperate thread by implementing runnable interface or extending class like we normally do
+and then provide it to an executor service. 
+The executor service automatically creates the thread and runs our task in that thread for us withoutus having to create a thread object and start the
+thread explicitly
+We control the threads through executors only
+We need to create executor service only once and we need to throw tasks at it for execution throughout our applicatiojns execution lifetime
+Executors are preferred way of executing tasks. They optimize multithreading capabilities of Java and improve the applications efficiency through
+optimal utilisation of resources
+It is waste of memory to create a thread everytime we need to execute a task
+Thats why executor service uses thread pool internally in which threads are recycled and reused
+In some of the executors the threads are allocated up front.
+Executor framework decouples the task submission from thread creation and maangement
+Each thread in the pool after executing a task picks up the next task from a task queue and executes it
+The threads continue to do so until the queue becomes empty and after that threads just block on the task queue and wait for more tasks.
+If all the tasks are executed and if you dont need to execute any more tasks then you need to tell the executor service that its services are no longer
+required by calling the shutdown method.
+You can also use shutdownnow to shut down the executor service immediately.
+
+Classes/Interfaces while using Executors framework:
+Executor(I) -> its main purpose is to decouple the task submission step from thread creation and running steps
+It has a method void execute which takes runnable as a parameter
+ExecutorService(I) -> it extends executor service. It provides life cycle to executors
+The life cycle has 3 phases initialisation,service and destruction phase.
+in initialisation stage it creates required number of threads and starts them if required. This phase is hidden and you csan customise it by providing
+it some parameter through executor.
+In seervice phase it provides its services by running the submitted tasks. -> this have submit method which accepts callable and runnavble interface
+In destruction phase it shut downs 
+Executors(C) -> it is a factiry class woith static class that constructs and return various kinds of instances of the executor service with commonly 
+useful configuration settings
+The returned executor service instance can act as a a fixed thread pool or cached thread pool or even as a single thread executor.
+We have methods like fixedThreadPool,newcachedThreadPool,newSingleThreadExecutor,newSingleThreadScheduledExecutor
+fixedThreadPool - it will take number of threads as input and create fixed number of threads i.e., the concurrenctly executing tasks will be fixed
+newcachedThreadPool - This kind of executor service continues creating threads as long as there are still some tasks awaiting execution and no thread
+is currently free to execute them. Once a thread is currently done executing task it is reused. There is no limit on number of threads that can be created on the pool
+
+newSingleThreadExecutor - The tasks will be executed sequentially one at a time. the pool size is set to one. Even if there are 100 tasks in queue
+only 1 thread executes one at a time.If we want to synchronise a common resource singlethreadexecutor is used.
+newSingleThreadScheduledExecutor -0> it can run scheduled tasks from a queue one after the other after a given delaty.
+
+ExecutorService execservice = Executors.newfixedThreadPool(3);
+It will create 3 threads in the pool and at max only 3 threads can run concurrently
+
+
+All the executorservice instances returned byb executors are actually objects of a class called threadpoolexecutor.
+threadpoolexecutor implements executor service interface
+Future(I) -> whenever you submit a callable for execution the executor service retyurns you an instance of future.
+It has get and isdone methods
+But if the thread with which future is running is done is down we can't complete it manually
+multiple cannot be combined/chained together 
+There is no exceptional handling in future API
+All these can be done using Completablefuture.
+It provides huge methods for creating chaining and combining multiple futures. It also hhas a very good exceptional handling support.
+completeablefuture.complete() -> this wil manually complete the future
+it also has a getnow method which will give you a default result if the result is not yet ready.
+runAsync and supplyAsync allows us to create a completeablefuture instance out of the runnable and supplier functional types respectively.
+
+Difference between submit and execute method in Executors servoice
+Execute method takes runnable as argument whereas submit takes callable as argument.If you want to return value go with submit.
+
+RunAsync 
+If yoiu want to execute your background thread but don't return anything theen we go with runAsync. It will take runnable as argument.
+Completablefuture.runAsync(Runnable)
+
+SupplyAsync
+If yoiu want to execute your background thread but want to return any value theen we go with supplyAsync. It will take runnable as argument.
+
+thenAcceptAsync,thenApplyAsync,thenRunAsync, thencompose
+
+Deamon threads 
+it is used to run threads in the background.
+As long as at least one user thread is running deamon thread keeps running.
+Ex of threads that can be run in deamon mode are 
+Socket reader thread
+long calculation thread
+Automatic save thread
+
+To create demoan threads give Thread.setDaemon(boolean on) -> the thread will be made deamon
+
+finalize() is a method defined in the Object class, and it serves as a mechanism for performing cleanup actions
+ on an object before it is garbage collected.
+
+Mjultithreading in java using spring boot
+
+Bean scope 
+
+Executors
+ThreadpoolTaskExecutor
+
+@SpringBootApplication
+
+Thread demons
+features and compatible features
+
+Filters Interceptors
+
+Random UUID
+
+
+
+When serializing and deserializing a singleton object, the default behavior of Java's serialization mechanism may indeed create multiple instances of
+ the singleton, violating the singleton pattern's intended behavior. To ensure that only one instance of the singleton is maintained after 
+ deserialization, you can implement custom logic in the singleton class to enforce the singleton pattern even after deserialization.
+ 
+ Here's how you can achieve this:
+
+Declare a readResolve() method in your singleton class and return the singleton instance from this method. This method will be invoked during 
+deserialization, allowing you to control the object returned.
+In the readResolve() method, return the singleton instance if it's already initialized; otherwise, initialize the singleton instance and return it.
+
+A thread race, also known as a data race or race condition, occurs in concurrent programming when two or more threads access shared data concurrently,
+ and the outcome of their execution depends on the relative timing or interleaving of their operations. 
+Race conditions can lead to unpredictable behavior and incorrect results in a multithreaded application.
+
+
+Garbage collection (GC) is an automated process in Java that manages memory by reclaiming unused objects and freeing up memory for new allocations.
+GC Process
+New object creation
+References created i.e., static variables,method variables everything will have reference
+GC will track references for reachability
+GC will mark references as live which are reachable
+GC will reclaim memory used by unreachable references
+The JVM manages memory allocation and deallocation dynamically, adjusting the size of the heap based on application requirements and garbage collection behavior.
+
+multiple threads can update the same object concurrently by using synchronization mechanisms to coordinate access and prevent data races and thread interference.
+
+Thread locking ensures thread safety and prevents data corruption in concurrent environments by synchronizing access to shared resources.
+Thread Sealing restricts class access and prevents unintended modifications or extensions, enhancing code stability, security, and encapsulation.
+Sealing refers to the process of restricting class access and preventing subclasses from extending or overriding certain aspects of a class.
+

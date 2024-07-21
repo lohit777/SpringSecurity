@@ -1,0 +1,90 @@
+Node.js and Express
+npx nodemon index.js - if there is any change in file 
+
+Node.js and its runtime
+ECMAScript - It is the scripting language specification on which javascript is based. It will tell how Javascript should look like. Whoever is following javascript needs to follow ecmascript. It serves as the guideline or the rules for scripting language design. It just gives the rules of Javascript standard.
+Javascript is the scripting language that conforms to the ECMAScript specification(var,let,const,Date).
+JS includes additional features that are not part of the ECMAScript specification like the DOM manipulation which is crucial for web development(like setTimeout,readFile).
+
+Common JS Browser engines - these are something which compiles javascript code into 0's and 1's
+1. V8 -Used by google chrome/chromiium-github.com/v8/v8
+SpiderMonkey - Used by firefox c+ Rust
+
+V8 is an open source JS engine developed for the chrome/Chromium browsers.Its written in C++ and is responsi ble for compiling JS code into native machine code before executing it.
+
+Javascript is meant for the browser
+
+In 2012-2013 some developers thought that why not pull v8 engine(convert JS to 0's and 1'ss) out of browsers and add few  features to it(like http, reading from a file) and make JS a backend language. Then that became Node.js
+
+Node.js is a runtime i.e., something which runs Javascript(not a language or a framework).Add a few backend things to JS and create a runtime called Node.js.Node.js is written in C/C++.
+Node.js takes out thre v8 engine and adds few backend funnctionalities to it like http server, settimeout,readfile
+
+Bun -> It is same as Node.js but it does same things done as Node.js but better.Node.js is slower for different reasons. So, few developers have re-written the JS runtime for the JS backend and introduced Bun. It is faster. It is written in zig.
+Codebase of  bun - github.com/oven-sh/bun/
+
+Things that can be done with Node.js
+Create clis(Command line interface)
+Create a video player
+Create a game
+Create a HTTP Server
+
+HTTp Server 
+It is a protocol defined for machines to communicate 
+It allows for websites frontend to communicate with the backend
+
+Frontend - Something that renders a website.
+Backend - A place where the some pro priority code is running. this is what node.js lets you write. A place where the request goes and gives the response is backend.
+
+HTTP Server is some code that follows the HTTP Protocal and is able to communicate with clients(browser/mobile apps).
+
+Things to know before sending a HTTP Request
+Protocol(HTTP/HTTPS) -> We need to know the protocol
+Address(URL/IP/PORT) -> We need to know the URL/IP/PORT which maps to the backend
+Route ->
+Headers/Body/Query params
+Method
+
+Things for receiveing a request(Server side)
+Once server executes the program it responds with below things
+Response Headers
+Response body
+Status codes
+
+example request client sends - https://chat.openai.com/backend-api/conversation  -> https is the protocol. chat.openai.com is the URL . backend-api/conversation is the route. Route tells us exactly what to do.
+One of the sample header is cookie. It stores the authorization when we login.
+Body - It will have request body
+Method : Type of request (POST,PUT,GET)
+
+Example response 
+Response header
+Response body
+Status code - 200 
+
+HTTP Protocol
+Things that happen in your browser after you fire a URL
+Browser will parse the url.
+Does a DNS Lookup i.e., it converts the domain to an IP.
+Establishes the connection to the IP
+
+DNS -> Domain name service resolution
+
+Things that happen in your Server after request is received
+you get the inputs
+do some logic on the input
+return the output body,headers and status code
+
+common methods
+GET - get something
+POST - adding something
+PUT - Update
+DELETE
+
+status code 
+200 - fine
+404 - page not found
+403 - authentication issue
+500 - internal server error
+
+There are many libraries that let you create HTTP servers. The most famous one is Express
+
+npm -node package manager

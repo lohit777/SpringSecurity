@@ -1,0 +1,276 @@
+Spring Security in Depth
+
+Go to spring boot official documentation iif you are not sure what properties you need to configure in application.properties
+
+Inside authentication provider we will write all the business logic to manage your application
+PasswordEncoder interface is used to encode your username and password
+
+To load the user details from a DB or an LDAP most of the logic will already be in UserDetails Service and  User Details Manager classes
+Once the user is authenticated the Spring Security Filter will store the authenticated object in security filters
+This ssecurity context will also have an session id.
+
+There are a number of spring security filters which help us toi peform the authorisation and authentication and displaying the login page
+and storing the authentication details
+
+Authorizationfilter will only provide authorisation to url after checking whether the url is public or private and send the request to next filter 
+which is defaultloggingpagefilter which will show the login page to the user and after the user enters the credentials next filter comes into picture 
+which is UsernamePasswordAuthenticationFilter. The role of this filter is to get username and password and store it into a UsernamePasswordAuthenticationToken
+and it will pass the object to AuthenticationManager by invoking the authenticate request.ProviderManager implements AuthenticationManager and it
+will interact with all the authentication providers available and developers defined authentication providers. it will loop through all the authentication
+providers applicable and if any one of it is satisfied it returns authenticated. All the logic of authentication and authorisation will be available
+inside this AuthenticationProvider. To fetch the userdetails from the system we will have another component called UserDetailssManager or
+ UserDetailsService. InMemoryUserDetailsManager is the class which implements UserDetailssManager
+UserDetails willl be stored in InMemoryUserDetailsManager
+
+There will b e a sessionid created in the browser when the user tries to access any particular endpoint and it will be stored as a cookie inside the 
+browser and this cookie will be send for all the requests from the browser to the backend server.
+Once you login then a new session id will be created and this will be stored as a cookie in your browser so when you try to hit the same request 
+again it will not ask for credentials as the cookie will be sent as part of the request
+
+defaultSecurtityFilterChain(HttpSecurity http) method of class SpringBootWebSecurityConfigurationis is responsible to provide security for all the
+requests by default
+
+Whenever we want to define our own custom requirements for security we need to invoke a method called requestMatchers and this requestMatchers method
+is going to accept any number of API requests
+  /**
+         *  Below is the custom security configurations
+         */
+
+        http.authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
+                        .requestMatchers("/notices","/contact").permitAll())
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
+
+See the pdf file on how can we write code to allow few requests and sttop few requests
+We can also deny all the requests that are coming towards a web application Code can be seen in the PDF
+We can also permit all the requests 
+
+We can store the multiple users credentials using InMemoryUserDetailsManager but it is not recommended for production applications
+For that you can create a bean of type InMemoryUserDetailsManager which is a class that extends userdetailsmanager
+We have a user class using which we can create username,password etc.
+User is a class whereas userdetails isa interface
+
+NoOpPasswordEncoder is the simplest password encoder available inside the spruing security and this doesn't do any encoding or hashing of the passwords
+It is not recommended for production
+
+By default spring security provides a authentication provider called DaoAuthenticationProvider and it is going to take help from the list of UserDetailssManager
+and UserDetailsService available inside the spring framework
+There are multiple implementations for UserDetailssManager like InMemoryUserDetailsManager JDBCUserDetailsManager, and LDapUserDetailsManager
+You can define your own authentication provider if required
+UserDetails is an interface which stores or loads the details of an user
+There are multiple methods in this interface and the class User will implement this interface and there will be no setter methods as this class is 
+related to security
+
+UserDetailsService only have one method loadUserByUsername(String username) based on the username provided it will fetch the details from the database for 
+a user
+UserDetailssManager have methods like createUser, updateUser, deleteUser, changePassword,userExists
+All this storing the userdetails loading the userdetails will be done by DaoAuthenticationProvider.
+
+LDapUserDetailsManager JDBCUserDetailsManager and InMemoryUserDetailsManager are implementations of userdetailsmanager
+To use LDapUserDetailsManager we need to add below dependencies
+spring-ldap-core
+spring-security-ldap
+UserDetailssManager will have createUser, deleteUser ,updateUser ,isUserExists,loadUserByUsername -> this is the important method.It will load user by username 
+from the database
+
+To create a database we can install MYSQL server in our system and use the same but it requires a lot of memory.
+We can also have database inside a cloud
+In AWS you can search for RDS and then create database by selecting our requirements
+Other than the above we can aslso go to FreeMySQLHosting.netl
+sqlectron.github.io - you can download this. It is a client appplication to connect to AWS database
+
+To use JDBCUserDetailsManager we need to add below dependencies
+spring-boot-starter-data-jpa
+mysql-connector-j
+spring-boot-starter-jdbc
+
+After that to connect with the database created in AWS cloud wqe need to configure below properties
+spring.datasource.url=jdbc:mysql://springsecurity.cjdg8jrihfh3.us-east-2.rds.amazonaws.com/eazybank
+#We are configuring the hostname of the database in mysql server along with the database i have created in my server
+spring.datasource.username=admin
+spring.datasource.password=MySQLSpringSecurity
+We are configuring credentials for the server in above 2 lines
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true  This will help to format all your sqls in readable format
+
+This is not a production recommended approach,, normally devops team will; inject the credentials through CI/CD pipelines for the database
+
+Wgenever we add MySQL related dependencies inside our classpath and we define the properties of database inside our application.properties spriingboot 
+will automatically create an object of datasource inside the web application
+
+Normally when you use JDBCUserDetailsManager you need to follow the same schema which is defined inside the JDBCUserDetailsManager. You cannot create
+tables by following your own schema.
+If client needs different schema then we cant use JDBCUserDetailsManager. We need to write our own  implementations of userdetailsservice
+We can create our own tables with the names as per our wish but then we cant use JDBCUserDetailsManager
+We need to create Entity and reposity class for the table which we created as we are not using JDBCUserDetailsManager
+
+@EnableJpaRepositories and @EntityScan annotations are used when we want to scan our entities or repositories which are in different package.
+
+When we write our own custom table and define our enities and passwords to get user details from our own custom defined database we need to override
+loadUserByUsername method in UserDetailsService class and define our custom logic there
+
+PasswordEncoder
+The additional authentication checks method in DaoAuthenticationProvider will do the authentication check of our password if the password provided
+by the enduser and ther passowrd in the database is matching
+
+https://www.base64encode.org/
+
+Hashing is used to store password
+Bcrypt-Generator.com  -> to know the working of a hashing
+Bcrypt is an implementation of hashing algorithm
+
+We have 3 methods in passwordEncoder interface 2 abstract(encode and matches) and 1 default(upgradeEncoding)
+Encode method is used during registration process of an enduser
+matches is used during login operation
+upgradeEncoding will give more security to your encoded passwords like we can do 2 times hashing
+
+Pbkdf2PasswordEncoder(implementation of passwordEncoder)
+ is not recommended because a hacker with higher GPU will be able to hack our application using Brute force algorithm
+
+Below are few more implementations of passwordEncoder that can be considered for production ready application
+Bcrypt  -> It uses Bcrypt hashing techniques. By the number of rounds you define for this hashing algorithm the CPU consumption will be more for
+this algorithm. Because of this when a hacker tries to get the password it takes a lot of CPU computational power.It demands lot of computational
+power for hackers
+Scrypt -> It is an advanced version of BcryptPasswordEncoder. It demands 2 parameters memory and computational power so this expects memory allocation
+So because of this hacker need computational power as  well as memory power
+Argon2 -> It has 3 parameters memory,computational power and multiple threads. This one will be even difficult for hacker to hack the passwords.
+But it will take more time for end user also to access your application when you are using Argon2PasswordEncoder. It will make the application more
+time to load.
+Both Argon2 and Scrypt will take a lot of resources and also call performance issues so they are not recommended for production issues.
+
+To store the password in db using Bcrypt first you need to encode the password using encode method in passwordEncoder and then set the password
+to the encioded password and store it in the database
+ String hashPwd = passwordEncoder.encode(customer.getPwd());
+            customer.setPwd(hashPwd);
+
+org.springframework.security.crypto -> All the password related classes will be in below package
+
+
+AuthenticationProvider
+SpringSecurity provides a default authentication provider which is DaoAuthenticationProvider which helps us to authenticate the user and perform
+additional checks whether the account is locked or account is expired or not.
+
+AuthenticationProvider will have a authenticate method which takes authenticate object as a input. If we want to write our own default logic we 
+should override this method for authenticationprovider. This method helps jus to authenticate the end user. If we override this method once we write all
+the business logic inside this method we should makle sure that we return the authentication object as an output from this method and it should have the
+information whether the authentication is successful or not
+
+There is another method in AuthenticationProvider supports. It determines what kingd of authentication should be supported like usernameandpassword
+ 
+ProviderManager will erase the credentials after logging in
+
+CORS and CSRF
+CORS(Cross origin Resource Sharingf) - 2 different origins are trying to share the resources. Ex: Client application and the backend application
+A origin is a URL which is an combination of the HTTP Protocol and what is the domain or hostname and what is the port number where the web application
+is deployed. Combination of these 3 will be called as a origin.
+When 2 different applications try to communicate with each other their port number might be different,their domain might be different or
+where the application deployed might be different.These kind of scenarios result into cross origins. Whenever such type of communication is happenning
+in different browsers the browser stops such type of communication
+CORS is a default protection provided by browsers to stop sharing the data/communication between diferent origins
+
+To resolve Cors issue you can use the annotation @CorsOrigin(origins="http://localhost:4200) We can accept communication from this origin
+@CorsOrigin(origins="*") //It allows communication from all origins
+But it is not difficult in real world applications as there might be soo many cross origins in real world and we can't define all of themon all the controllers.
+We can define these configurations globally with the help of spring security framework
+Please find the code of the same below
+ http.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowCredentials(true);
+                        config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setMaxAge(3600L);
+                        return config;
+                    }
+                }))
+				
+CSRF is a security attack
+We shouldn't disable the CSRF for production applications
+Spring security by default enables CSRF and not allow to update/create new resources.
+CSRF token is secured random token that is used by many web applications in the industry. This token should be uniques per session of the end user and
+it should be very large random values so that it is very difficult to guess.
+We should configure to ignore csrf protection for public requests like below
+http.csrf().ignoringRequestMatchers("/contact", "/register")
+
+CsrfTokenRequestAttributeHandler - Implementation of CsrfRequestTokenHandler interface that is capable ogf making CsrfToken available as a request attribute
+and resolving the token value  as either a header or parameter value of a request.
+Spring security framework generates CSRF token but to expose the token to UI application as a header or cookie or get that value processed we need the
+ above Attribute Handler 
+ CookieCsrfTokenRepository - it is responsible to persist the CSRF token in a cookie named "XSRF-TOKEN" and reads the header "X-XSRF-TOKEN"
+ CookieCsrfTokenRepository.withHttpOnlyFalse() - this allows the javascript application deployed inside your angular application to read the CSRF token
+ 
+Our backend server neecds to send the CSRF token as a response to the UI application 
+For this we need to implement a filter. We need to create a class which extends OnceperRequestFilter and this class will have a method doFilterInternal
+which we need to override
+Whenever token value generated by my backend application it is going to available as an request attribute and the  same we will try to read it and typecast
+it to csrftoken object. Using this csrftoken objectg we will set the header for the response using csrftoken header and we will return the response by 
+including this csrftoken header to the UI application
+
+BasicAuthenticationfilter is the filter of spring security which is used to perform basic authentication.
+Wwe can add a addFilterAfter
+http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class) Here  CsrfCookieFilter is our own custom filter which extends OnceperRequestFilter
+We are telling spring security to execute BasicAuthenticationFilter first and generate a csrftoken in it and use that csrftoken to persist in the
+response in CsrfCookieFilter
+
+public class CsrfCookieFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        if(null != csrfToken.getHeaderName()){
+            response.setHeader(csrfToken.getHeaderName(), csrfToken.getToken());
+        }
+        filterChain.doFilter(request, response);
+    }
+
+}
+This is the customfilter which we have writter to persist the csrftoken in the response.
+  http.securityContext((context) -> context
+                        .requireExplicitSave(fa9lse))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS) //We are telling spring securuity that 
+please create JSESSIONID by following this sessionManagement that we have created here.
+We are telling spring security to create jsessionid after the initial login and asking it to use the same for the UI applicartion also after the initial login.
+requireExplicitSave  - with this we are telling spring framework that we are not going to take responsibility to save the credentials inside the 
+SecurityContextHolder
+
+In BasicFilter class the request by the end user that is once the user logs in it will be converted to UserNamepasswordAuthenticationToken
+
+Authorisation
+GrantedAuthority will store the authorities or roles
+SimpleGrantedAuthority will implemetn grantedAuthority and we will have authority and role in this
+Once the roles and authorities are assigned to a end user no one can change it as there are no setter methods available.
+getAuthorities method in User class will fetch the authorities of a particular user.
+Even for UsernamePasswordAuthenticationToken also same method getAuthorities will be invoked to get the authority details.
+
+We can have any number of authorities for a user.
+We can create a table called authorities and have a foreign key in that table and map it to users table.
+
+@JsonProperty(access=JsonProperty.Access.WRITE_ONLY)
+
+Using hasAuthority() method we can configure a single authority against an endpoint REST service so that whoever has that authority can only access 
+that particular endpoint
+If you want to configure multiple authoritites for a particular REST API service or path then you can use hasAnyAuthority()
+access() - using this access method you can configure complex authorisation tools. We can use logical operators inside it. 
+
+<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.3</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.3</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.3</version>
+			<scope>runtime</scope>
+		</dependency>

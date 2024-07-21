@@ -1,0 +1,160 @@
+REST API
+
+Representational State Transfer
+It is an architectural style for the web(makes use of HTTP)
+REST is a web based application programming interface
+
+Soap - Simple object acess protocol.
+The primary purpose of soap is to provide a standarized way to exchange data between applications regardless of the platform or the programming language used
+Web Service Description language
+Soap API is used for building highly secure application and reliable method of exchanging 
+data between applications.
+
+Whenever we are talking about REST we are talking about resource
+For example take a Todo Application
+In Todo application we will have users and todos and these are the resources
+
+Each resource has a URI(Uniform Resource Identifier). Using this we can access a resource
+
+For example you want to identify the resource with username Lohit
+/users/Lohit/ - (/users/{id})
+/users/Lohit/Todos - (/users/{id}/Todos - we are getting all the todos for a particular user
+
+You can also perform actions on these resources like add/delete/update a todo.
+
+Spring boot web dependencies are required to create REST API
+
+@Restcontroller will have both @Controller and @ResponseBody annotations inbuilt in it. So, when we feel in a particular class all the methods should have @ResponseBody annotation we will give @RestController annotation at the top of the class.
+
+@RequestMapping is used to map the application to a particular url and @ResponseBody is used to get the output as is.
+
+Difference between Controller and RestController
+Whenever you are building a web application you need views in such cases we will use @Controller but  when we are building a rest api we need the object returned as is instead of a view in such cases we can use @Restcontroller
+
+Jackson2 is a framework which converts a bean into JSON or any other format.
+Jackson dependency is present in spring boot starter web dependency
+
+Path Variables
+Wheneever we want to pass some variable name in the url and want it to be showed on screen we use PathVariables.
+Ex -/Hello-world-path-variable/{name} -> Here name is the variable and we can give whatever name we can and to get that name we use @PathVariable
+
+@RequestMapping("Hello-world-path-variable/{name}") //To send the variable to the url and show it on screen we use pathvariable
+	public HelloWorldBean HelloWorldBeanPathParam(@PathVariable String name){
+		return new HelloWorldBean("hello world"+name) ;
+	}
+
+ResponseStatusException is used to throw exception/Status for the  API calls like Data Not DFound,Internal Server error,Accepted. 
+We need to give (HTTPSTATUS.(The Http Staus for which we need to thrown an excpetion))
+Ex - throw new ResponseStatusException(HTTPSTATUS.NOT_FOUND) - This will throw a data not found exception if the resource uri is not found
+
+Request Methods for REST API
+Get- to retrieve details of a resource
+POST - To create a new resource
+PUT -Update an existing resource
+PATCH - Update part of an resource
+DELETE -Delete an resource
+
+Response Status for an REST API
+Resource is not found - 404
+Server Exception - 500
+validation error - 400
+200 - success
+201 - created - When the resource is created correctly
+204 - No content. If you are updating a resource but you haven't made any update then we can use this status code
+401- Unauthorised ( If there is an unauthorised request)
+400 - Bad Request - If you don't pass all the required details
+
+RequestBody annotation is used to capture the request send by the user in POST method.
+
+By default when you hit the url in browser it will hit the get request. But when we need to execute a post Request we need a API client.
+We will use talon api Tester.
+
+UriComponentsBuilder provides additional static factory methods to create links based on currentHttpServletRequest.
+If we want a location of a URI when we post a request we can use of ServletURIComponentsBuilder which extends UriComponentsBuilder
+
+ResponseEntity.created(location ).build() - this will give the response Http status once the API is created.
+
+When creating a resource if we want to generate a random Id instead of User passing it we will use SecureRandom class.
+Creation syntax
+SecureRandom secureRandom = new SecureRandom() ; //It is used to generate a random integer
+	String randomId = new BigInteger(32, secureRandom).toString() 
+This is used to create a random Number and convert it into a string
+
+Using Spring boot data rest dependency we can automate eveything.
+
+We can extend PagingAndSortingRepository repository insteasd of jparepository for REST APIS.
+We can sort the request and limit the size of request/response using pagingandSortingRepository
+
+http://localhost:8080/userDetailses?sort=name - this will sort the request by name
+
+We can change the page size by giving ?size=1 after the url so that only one user will be present in the page
+
+
+Integration testing is somethinng which will test the entire application
+Unit Test is something which will test a unit of your appplication
+
+For testing we have an annotationpn the class @SprongbootTest
+Annotation that can be specified on a test class that runs Spring Boot based tests.Provides the following features over and above the regular Spring TestContextFramework: 
+
+Spring framework provides a template to fire rest apis for testing which is called TestRestTemplate
+
+While testing the port 8080 might be used by the actual running application so we need to use the port which is available and we can configure that by configuring webEnvironment
+
+To compare between to Json reqursts will be too difficult so we can use a framework called JsonAssert
+JSONAssert will ignore spaces between expected and actual response
+It will also exactly  give you what is not matching
+It will also help us to compare only the required things i.e., which doesn't change for that we just need to change the strict field in JSONAsserts by making it to false so that ojnly the fields which are present in the actualResponse will be compared with the expected Response.
+
+HttpEntity accepts both headers and url.
+HttpHeaders is used to configure Headers
+
+getForEntity is used for firing getrequests and postForEntity is used for firing post requests
+
+//For testing a POST request we need the body,header(content-type) in which we will pass the data and the url
+	
+	//We need to check the responsestatus whether it is successful or not and location header location is correct or not
+
+Junit will runn the tests in any order
+
+The above thing we have test the application as a whole.
+
+When you do unit testing you want to test only a specific layer like a weblaye/Data Layer/Business Layer.
+
+The class name of a unit test ends with Test whereas the class name of a Integration test ends with IT
+
+For executing unit test we need to mock the class which is being called in the class where our unit is present
+Please refer to the code for better understanding
+
+We can also add the security to the unit tests by adding spring-security dependency
+
+RestTemplate is a class in the Spring Framework that simplifies communication with HTTP servers and RESTful web services. It provides a high-level API for making HTTP requests and processing responses. 
+With RestTemplate, you can perform HTTP operations such as GET, POST, PUT, DELETE, etc., and handle the response in a convenient way.
+RestTemplate is a class in the Spring Framework for consuming RESTful web services.
+ It simplifies the process of making HTTP requests to RESTful services and processing the responses.
+
+ the exchange() method is part of the RestTemplate class and is used to execute HTTP requests with more flexibility compared to methods like getForObject() or postForObject(). The exchange() method 
+ allows you to handle the HTTP request and response entities separately, giving you access to various details of the request and response.
+Using the exchange() method gives you more control over the HTTP request and response, allowing you to customize headers, handle different HTTP methods,
+ and access additional information about the request and response entities. It's particularly useful when you need to interact with RESTful APIs that 
+ require fine-grained control over the HTTP communication. 
+
+HttpHeaders headers = new HttpHeaders();
+headers.setContentType(MediaType.APPLICATION_JSON);
+To set content type to JSON in headers we use above code
+
+HttpHeaders class is used to represent HTTP headers in HTTP requests and responses like mediatype,authorisation. 
+It provides methods for manipulating headers, such as adding, removing, or retrieving header values. 
+
+ResponseEntity<String> responseEntity = restTemplate.exchange(
+    "http://example.com/api/resource",
+    HttpMethod.POST,
+    requestEntity,
+    String.class
+);
+
+
+
+
+
+
+	

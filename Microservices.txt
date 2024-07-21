@@ -1,0 +1,533 @@
+Microservices
+
+Http requests will be sent to controller.
+Controller calls service layer and executes business logic.
+We willl also have a repo to talk to a database
+
+lombok dependency is used to reduce boiler plate code
+
+Microservices are small autonoumous services tthat work together
+
+microservices are something which are exposed by REST and small well chhosen deployable units and cloud enabled.
+
+Challenges in Microservices
+1.Bounded Context
+We will divide a monolith appplication into 5 or 10 or 20 microservices. We need to decide the boundary of each microse rvice which is very difficult. We need to know what a particular microservice does and what it does not do. Deciding the boundaries of the microservices is evolutionary process.
+
+2.Configuration Management
+There will be a number of microservices and number of instances for each microservice and different environments. So, to maintain all these a lot of configuration is needed which is difficult.
+
+3.Dynamic Scale up and Scale Down
+The loads on different microservices will be different in diffewrent instances of time.
+At one instance microservice need 2 instance of the microservice but at different point need 10 instances of the same microservice. We should do all this with the help of dynamic load balancing.
+We need the aboility to bring down old instances and also to distribute the load among new instances
+
+4.Visibilty
+For instance if the functionality is distributed among 10 microservices and there is a bug how do you identify where the bug is?
+You need to have a centralised log where I can go and find out what happened for a specific request.
+We also need monitoring around the microservices
+You need to automatically identify servers where there is not enough disc space.All of these things needs to be automated. So, we need great visibilty into what's happening with these microservices.
+
+5. Pack of Cards
+If its not well designed Microservices architecture can be like a pack of cards.
+In microservices one microservice calls other microservice that one calls thed other microservice and there will be a top mircoservice on top of all these microservices.
+If this microservice fails the entire application might go down.
+So, you need fall tolerance in your microservices
+
+
+
+Spring cloud
+Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, short lived microservices and contract testing). 
+Coordination of distributed systems leads to boiler plate patterns, and using Spring Cloud developers can quickly stand up services and applications that implement those patterns. 
+They will work well in any distributed environment, including the developer’s own laptop, bare metal data centres, and managed platforms such as Cloud Foundry.
+
+To the typical problems which are present in distributed systems in cloud spring cloud provides solutions.
+
+There are many projects under spring \cloud
+Spring cloud netflix is one of the important project
+there are a wide range of components that netflix has open sourced under the project spring cloud netflix
+
+Spring cloud Config is another project under Spring Cloud which provides centralised configuration management
+Spring Cloud Bus enables the microservices and Infrastrucure Components
+
+Spring Cloud Config server provides and approach where you can store all the configuration for all the different environments of all the microservices in a git repository
+.So you can store all the configuration for different environments for diffirent microservices in just one place  in a centralized location and spring cloud Config server
+ can be used to expose that configuration to all the microservices and that helps us to keep the configuration in one place.
+This will help us in resolving the challenge of Configuration Management as all the configuration will be in just one place
+
+Dynamic Scale Up and Down
+For Dynamic Scale Up and Down we will use a naming server Eureka
+So, all the instances of all the microservices would register with the naming server Eureka.
+Naming server has 2 important features.
+One is service registration so all microservices will register with the microservices
+Second one is service discovery
+
+We will use ribbon for client side load balancing. It makes sure that load is evenly distributed among the existing instances that it gets from the naming server.
+Feign is a mechanism to write simple RESTful clients.
+
+The solution for visibilty and monitoring are
+Zipkin Distributed tracing server - we will use Spring cloud Sleuth to assign a ID to a request across multiple coomponents and we would use Zipkin Distributed tracing to trace a request across multiple components.
+Netflix API Gateway - We will implement all the common features like security,logging etc in something called API Gateway.
+
+Hystrix is used for fault tolerance. If service is down hystrix will tell us to give a common response
+
+Microservices Advantages
+1.Microservice Architecture is that it enables you to adapt new technology and process very easily.
+2. Dynamic scaling
+3. Faster release cycles
+
+
+for each application/urls we use different ports
+Ports
+Application	Port
+Limits Service	8080, 8081, ...
+Spring Cloud Config Server	8888
+Currency Exchange Service	8000, 8001, 8002, ..
+Currency Conversion Service	8100, 8101, 8102, ...
+Netflix Eureka Naming Server	8761
+Netflix Zuul API Gateway Server	8765
+Zipkin Distributed Tracing Server	9411
+
+For Microservices we need to add below Dependencies
+Spring Web
+Spring Boot DevTools - Developer Tools
+Spring Actuator- for endpoints to monitor ansd manage your application
+Spring Config Client- used to connect to spring cloud
+
+We need to configure below port whenever we are using spring cloud starter config
+spring.config.import=optional:configserver:http://localhost:8888 
+This means we are running the port on port 8888
+At the beginning we will not have config server running so we will give optional at the start
+Without this if we give spring cloud config dependency the application will not start up
+
+
+We can configure the variable name values in application.properties
+If we want to configure a specific microservice we need to give @ConfigurationProperties
+with the name of the microservice in the bracketso that we will be able to get the values of that microservice from the application.properties file
+
+Config Server dependency is used for central management for configuration via Git/SVN or HashiCorp Vault
+
+Git is the best version control tool available right now.
+
+git init command is used to create a git repositoryS
+We need to store all the local config files in a specific git repo
+If we want to add a file in the git repo we need to give git add * or filename
+After adding if we wnat to commit the changes git commit -m "commit text"
+With this the changes will be commited to our local repository
+
+To connect our Cloud Config Server to the git file we need to give  spring.cloud.config.server.git.uri=file://${filepath}.
+The file path should be the path where we created our git repo
+Once that is done we need to launch the Cloud Application by using below url
+http://localhost:8888/limits-service/default -> here 8888 is the port for cloud config server
+limits-service.properties is the file which is present in the github repo which we created and default is the profiles
+ and once we hit the url we will have details like file name created in the git repo the file url, profiles and the attributes which we have configured in the git file so that git file configurations will be taken instead of the original limits-service application. In this way we will connect our git repo to the cloud config
+
+Please find the details once we hit the url
+{"name":"limits-service","profiles":["default"],"label":null,"version":"e3a56fd17ce3d11b362f084da14f6d9af75e5a52","state":null,"propertySources":[{"name":"file:///C:/Users/lohit/git-localconfig-repo/limits-service.properties","source":{"limits-service.minimum":"5","limits-service.maximum":"997"}}]}
+
+Now after connecting our Cloud Config Server to Git we need to connect our microservice to Spring Cloud Config Server
+To connect our microservice to the Cloud Config we need the depenpendency spring Cloud Config(Config Client)
+Along with that we need to configure the url to connect microserv
+spring.config.import=optional:configserver:http://localhost:8888 
+The config server is in port 8888 if you want to make the connection mandatory you need to remove optional
+We also need to give the application name as the same name of the file name which is present in git repo so that it will be connected
+
+Now when we launch the application and hit the url we will get values from the file from our local git repo instead of the configuration which we setup for our microservice
+
+Values which you have in Application.properties for your microservice have less priority compared to the values in git repository
+
+
+The flow of the application till now is once you connect the cloud config to the github it will get the configuration values from the github 
+repo file and once you get that values and connect your microservice to the spring cloud config server using import you will get the configuration values from the github file and that will be used in our microservice
+
+
+If we want to configure for different environments we need to create multiple files in git for different environments like dev,qa like limits-service-dev /limits-service-qa
+Once we create those files and configure values we can go to http://localhost:8888/limits-service/qa directly to check configurations for qa in spring cloud config server
+
+Now if we want to connect our application to the config server for different environments we need to configure below in application.properties
+spring.cloud.config.profile=qa 
+This will give us the configuration setup in limits-service-qa.properties file in local github repo
+for dev we need to give dev
+
+
+Till now we configured  properties for a microservice limits-service in the local git for different environments
+If we want to configure properties for a microservice X we can give microservice-x.properties in the same path
+In this way all the configurations for all the microservices which we want to  configure will be in the centralised repo
+With this the operations team can configure all configuration related to all microservices for multiple environmanes in a single location
+
+
+
+spring.jpa.defer-datasource-initialization=true
+#In Spring boot the data.sql will be executed before table is created. So to stop executing SQL file before creating a table we need 
+#to configure this
+
+Even though we give below in application.properties spring.config.import=optional:configserver:http://localhost:8888 sometimes we will get error after importing cloud config. In such cases we neeed to add below dependency as well	<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
+
+Resttemplate is used to make rest API Calls
+RestTemplate is a class in the Spring Framework that simplifies communication with HTTP servers and RESTful web services.
+ It provides a high-level API for making HTTP requests and processing responses.
+ With RestTemplate, you can perform HTTP operations such as GET, POST, PUT, DELETE, etc., and handle the response in a convenient way.
+
+Normally calling other microservices is really difficult in spring boot as we need to write nearly 15-20 lines of code for each call
+So, sprin boot provides with a framework called FEIGN to call other microservices. Feign makes easy to call other microservices
+
+To use feign we need to add a dependency called open-feign
+
+		<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+
+After adding the dependency we need to enable it by using @EnableFeignClients annotation on the Application from which we need to call other microservice
+After that we need to create a proxy under the service where we need to call other microservice and give @FeignClient(name="name of the service frojm which we need to call") for the proxy service. Along with the name we also need to give the url we need to hit to call the other microservice(not the complete url) like url="localhost:8000"
+ 
+But for example we don't know in which port the microservice is going to run like 8001,8002 and if there are multiple instances of the microservice which we need to call then we need to change the url continously. So that is why we will use something called service registry or a naming server.
+
+In a microservices architecture all the instances of all the microservices would register with a service registry.
+
+You need to create a seperate namingserver project and for the naming server spring provides is Eureka naming server.
+With this we can create a server.
+It provides spring cloud discovery
+For namingserver project you need spring boot dev tools, actuator and naming server dependency.
+
+Once the project is added we need to add the annotation @EnableEurekaServerto use the server
+
+Once we create the server we don't want the eureka server to register with itself.  For that we need to add couple of properties
+eureka.with.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+
+To connect the microservice with eureka client you just need to add eureka naming server dependency for the microservices in which you are trying to connect to the server
+
+But to be exactly sure that you are connecting to eureka naming server we need to configure the url as well in  the nsamingserver
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
+
+Once we connect to the naming server we need not give the url in the FeignClient annotation
+If we give @FeignClient(name="name of the service frojm which we need to call"-service) for the proxy sevice should be sufficient.
+When we use naming server we always need to give the name of the application as application-name-service
+It will connect to the microservice which we need to call and gets the instances available for that microservice and load balances between that microservice
+This is called client side load balancing
+
+There will be multiple instances of the microservice which we want to call in feignclient and when we call Naming Server it will give us the instances of those and load balances between the instances. 
+Each time when you hit the url the instance might change. This is called client side load balancing
+
+Spring-cloud-starter-netflix-eureka will have Spring-cloud-starter-load-balancer in it and this is the framework used by feign to actually distribute the load between the instances.
+In the earlier versions of spring cloud the load balancer which was used is Ribbon
+
+
+In all the microservices there will be few common features like authentication
+To implement all these common features we will go for an API gateway.
+In older versions of Spring Zool was used as an API Gateway but as it is not supported by netflix Spring cloud moved to Spring Cloud Gateway
+
+To make the API gateway to connect to Eureka we need Eureka Discovery client
+Along with this we also need to add Gateway  dependency which helps to route to APIs
+Please fiknd the dependencies
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+http://localhost:8765/CURRENCY-EXCHANGE-SERVICE/currency-exchange/from/USD/to/INR - 
+Here we are passing the  name currency exchange is registered with in here(CURRENCY-EXCHANGE) and we want the API gateway to talk to Eureka with that
+ name find the server loation and then execute requests to the URL currency-exchange/from/USD/to/INR but it will not be enabled by default in Spring Cloud
+For all the instances we 
+
+To enable it we need to configure below property in application.properties
+spring.cloud.gateway.discovery.locator.enabled=true
+
+To use the instance name we got in the Eureka server in lowercase we  need to configure as below in application.properties for API Gateway
+spring.cloud.gateway.discovery.locator.lowerCaseServiceId=true
+
+We can customise the urls in API Gateway 
+builder.routes()
+				.route(routeFunction)  
+				.build()
+We are passing routeFunction to route i.e., we are telling the url to route to routeFunction
+
+	Function<PredicateSpec, Buildable<Route>> routeFunction
+		= p -> p.path("/get") 
+		      .uri("http://httpbin.org:80") ;  
+If we hit a .get url from the Api gateway it will be redirected to http://httpbin.org:80 url
+
+Spring Cloud Gateway
+Effective way to route to APIs
+Provides cross cutting concerns
+Security and monitoring/metrics qare the important things we can implement in a spring cloud gateway
+It is build on top of Spring WebFlux
+
+Features of Spring Cloud Gateway
+It can match requests on any request attribute
+You can define predicates and filters
+It integrates withSpring Cloud Discovery Client(Load Balancing)
+It also supports pathrewriting
+
+
+Circuit Breaker
+one microservice talks to other microservice the other microservice talks with another microservice
+If any of the microservice breaks down or is slow it impacts the entire chain 
+
+So we can return a fallback response if a service is down in some cases like in a shopping application if the products tab doesn't load we will load a default set of products
+Can we implement a circuit breaker pattern ti reduce load i.e., if a particular microservice is down the microservice calling it instead of continously calling can we return a default response back
+Can we retry requests in case of a temporary failures
+Can we implement rate limiting like allowing only a certain amount of calls to a microservice in a specific amount of time.
+
+
+All these are possible with the help of cicuit breaker framework Resilience4j. In pr  evious versions Netflix and Hystrix were used.
+Resilience4j is a lightweight fault tolerance library designed for functional programming. Resilience4j provides higher-order functions (decorators) to enhance any functional interface,
+ lambda expression or method reference with a Circuit Breaker, Rate Limiter, Retry or Bulkhead.
+
+Below dependencies are required for resilience4j
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+		</dependency>
+
+@Retry(name="default") //Here retry will try to execute this method even it fails for 3 times.
+	//If it fails 3 times only then it would return an error
+
+resilience4j.retry.instances.sample-api.maxAttempts=5
+We can also configure number of attempts the application needs to be retried before faoiling
+
+
+@Retry(name="default",fallbackmethod="methodname")
+
+the method should have throwable as a parameter
+If the application reaches maximum attempt of retries but still fails then fallbackmethod is executed
+ 
+resilience4j.retry.instances.sample-api.waitDuration=1s
+#We can also configure how much can we wait before each retry
+resilience4j.retry.instances.sample-api.enableExponentialBackoff=true
+#It means each retry will take an exponential time
+#For example first attempt will take 1s 2nd attempt will take 1.5s third attempt will take 2 s 4th attempt will take 4s
+#There will be an exponential increase in the wait time
+
+@CircuitBreaker(name="default",fallbackMethod="hardcodedResponse") //Circuitbreaker doesn't execute the method whichh is failing. It will directly go to fallbackmethod if the method is not present.
+It will break the fauiling service circuit and directly return a response back
+
+https://resilience4j.readme.io/docs/circuitbreaker
+
+@RateLimiter - We are setting a time period and during that time period we only want to allow a specific number of calls
+We can configure it as below in application.properties
+
+resilience4j.ratelimiter.instances.default.limitForPeriod=2
+resilience4j.ratelimiter.instances.default.limitRefreshPeriod=10s
+
+Sleuth and Zipkin
+If there are multiple internal calls between microservices and if a particular request fails it is really difficult to trace back from which 
+microservice error occurred.
+In such cases we will use Sleuth
+Whatever the logs we get from the microservices we get logs we will have service name for that particular log or trace id so we will know from
+where we got that error.
+Below is the format
+{Service-name,traceid,spanid}
+traceid will be unique. Sleuth will generate traceid by default
+For one request the traceid will be same among all microservices including API gateway
+Spanid is unique within the same microservice
+It will be different for each microservice but it will be sAame for all the requests
+Sleuth will take care of all these things but if we want these things in a graphical way Zipkin helps us to keep all these logs in a graphical way
+All the logs Sleuth is generating will be passed to Zipkin server.
+Sleuth generates logs and passess it to zipkin server and zipkin represents it in graphical way.
+
+Sping cloud starter slouth dependency is needed for sleuth
+Add this in all your microservices and API Gateway
+Adding the dependency is enough in your microservices but you need to add below configuration for api gateway
+spring.sleuth.reactor.instrumentation-type=decorate-on-each
+
+To use zipkin download zipkin server
+To start the zipkin server in our local machine go to command prompt and give java --jar "zipkinjarfilename"
+We need to add spring-cloud-sleuth-zipkin dependency to use zipkin in all your microservices
+We need to pass the zipkin server url to your microservices and API Gateway application as well so that they can pass traceid spanid to zipkin server.
+
+spring.zipkin.base-url=http://localhost:9411 ->it is default url for zipkin server.
+
+
+Improve performance of a  microservice
+1.Optimize Database Queries:
+Use indexes appropriately to speed up database queries.
+Optimize SQL queries by reducing the number of joins, fetching only required columns, and avoiding expensive operations like full table scans.
+Consider denormalizing data or using caching mechanisms for frequently accessed data.
+
+2.Implement Caching:
+Use in-memory caching solutions like Redis or Memcached to store frequently accessed data.
+Cache database query results, computed values, or API responses to reduce latency and improve response times.
+Implement caching at different layers of the application stack, such as application-level caching, database query caching, and HTTP response caching.
+
+3.Use Asynchronous Processing:
+Offload long-running or non-blocking tasks to background threads or queues using asynchronous processing.
+Use asynchronous frameworks like Spring WebFlux or reactive programming libraries to handle concurrent requests efficiently.
+
+4.Scale Horizontally:
+Scale microservices horizontally by deploying multiple instances across multiple servers or containers.
+Use container orchestration tools like Kubernetes to automate deployment and scaling processes based on demand.
+
+5.Optimize Network Calls:
+Minimize the number of network calls and reduce payload size by using efficient serialization formats like Protocol Buffers or JSON.
+Use HTTP/2 to reduce latency by multiplexing multiple requests over a single TCP connection.
+
+6.Implement Load Balancing:
+Distribute incoming requests across multiple instances of microservices using load balancers.
+Use intelligent load balancing algorithms to evenly distribute the workload and prevent any single instance from becoming a bottleneck.
+
+6.Optimize Code and Algorithms:
+Profile and optimize critical code paths and algorithms to improve performance.
+Use efficient data structures and algorithms to minimize computational overhead and reduce processing time.
+
+7.Use Content Delivery Networks (CDNs):
+Cache static assets, images, and files on CDNs to serve content from edge servers closer to end-users.
+Offload bandwidth and reduce latency by delivering content through CDN networks.
+
+8.Monitor and Tune:
+Monitor application performance using metrics, logs, and tracing tools to identify performance bottlenecks.
+Use profiling and monitoring tools to analyze CPU, memory, and I/O usage, and optimize resource utilization accordingly.
+
+9.Optimize Database and Data Storage:
+Choose appropriate database technologies and configurations based on workload requirements.
+Partition data, optimize schema design, and use database features like sharding or replication to improve database performance and scalability.
+
+10.Implement Caching at API Gateway Level:
+Use API gateways to cache responses and reduce the load on backend microservices.
+Implement caching policies and rules at the API gateway to cache responses based on criteria such as HTTP headers or query parameters.
+
+
+Cohesion:
+Cohesion in microservices refers to the degree to which the functionality within a microservice is related and focused on a specific business 
+capability or domain.
+Each microservice should have high cohesion, meaning that it encapsulates a single responsibility or business function. 
+This helps maintain the autonomy and independence of microservices.
+High cohesion within a microservice leads to better maintainability, scalability, and flexibility. 
+Developers can make changes to a microservice without affecting other parts of the system.
+Cohesion can be achieved by aligning microservice boundaries with bounded contexts in domain-driven design (DDD). 
+Each microservice should model a distinct domain concept or business capability.
+
+Coupling
+Coupling in microservices refers to the level of interdependence and reliance between microservices.
+Microservices should aim for low coupling, meaning that they are loosely interconnected and have minimal dependencies on each other. 
+This enables independent deployment, scaling, and evolution of microservices.
+Tight coupling between microservices can lead to various issues, such as deployment dependencies, versioning challenges, and difficulties in 
+maintaining consistency and reliability.
+Techniques to reduce coupling in microservices include using asynchronous communication, implementing bounded contexts with well-defined interfaces,
+ and employing event-driven architecture patterns.
+ 
+SSO is an authentication scheme 
+It enables multiple users to securely access multiple applications and services using a single ID.
+With SSO users can login to many apps without logging in each time
+It is built on a concept called federated identity.
+It enables sharing of identity information across trusted but independent systems.
+There are 2 protocols for this SSOS
+1.SAML -> Security access markup language is an XML based open standard for exchanging identity information between services
+We use JWT to share identity information between services
+
+Okta is a commercial identity providers
+
+For example an office worker visits an gmail account. Gmail server will identify user is  from a work domain and returns a SAML authentication request
+back to the browser. The browser redirects the user to the identity provider for the company provided in the SAML Request.
+
+The identity provider shows the login page where the user enters the login credentials
+Once the user is authenicated the Identity provider generates a SAML response and returns that to the browser
+This is called SAML Assertion
+The SAML Assertion IS THE cryptographically signed XML document that contains information about the user and what the user can access with the service 
+provider.
+
+Identity Provider as per Okta
+It is a service that stores and manages digital identities.Companies uses this services to allow their employees or users to connect with the resources 
+they need. They provide a way to manage access,adding or removing privileges while security  maintains tight.
+
+Benefits of an Identity provider
+Reduce password fatigue
+Strong authentication
+Multifactor authentication
+Single signon
+Mitigate attack vecktors
+
+Threre are 2 technologies IDP implements
+SAML -> It passess credentials from a IDP to a service provider
+2.oPENid -> Authenication layer for OAuth or open Authenication
+
+Working procedure
+User will try to access a service provider
+User willbe redirected to SSO to enter credentials
+SSO sends a SAML request IDP
+IDP sends a SAML reply validating the identity of the user then SSO sends SSAML assertion to the service providerallowing access
+ 
+API Gateway
+All the requests comes to API gateway and its the responsibility of API gateway to route the request to correct microservice
+Whilre giving the url the consumer gives the port that the API gateway runs and then he gives the service which he want to hit and the url which
+he want to hit
+localhost:9090/studen-service
+
+Pre-filter gets executed before the API gateway routes your request to microservice
+We can create customfilter by implementing GlobalFilter and we need to override filter method in the API gateway and this filter will be applicable 
+to all the requests coming to all our microservices
+
+Post filter gets executed after our microservice gives the response back to API Gateway and before our API gateway passes that response to consumer
+
+We can also make one microservice to call API Gateway and with that response API gateway can call the other microservice instead of returning it to consumer
+
+For that in feign client we need to give the name of our API gateway as the microservice name and we can have multiple methods and top of it 
+we need to give path of the microservice which we want to hit along with the url which we want to hit
+That means our microservice will go to api gateway first and then to the url which we have given on top of our method
+
+Fault Tolerance
+CircuitBreaker States
+Closed - all calls are allowed irrespective of whether its successful or not
+Open - No calls are allowed
+Half open - It will allow few calls from one microservice to other microservice
+
+CircuitBreaker Properties
+slidingWindowSize - How many calls we should allow before stopping the calls 
+For example if you have 1000 calls/s for a particular microservice and if we set the number of calls as 100 then it will check for last 100 calls
+i.e., from 901-1000
+failureRateThreshold - We need to provide how much percentage of fault we need to tolerate. If the failure rate is greater than failureRateThreshold
+then we will not allow the calls
+If the slidingWindowSize is 100 and we set failureRateThreshold to 50 then if the number of calls failed are 60 then we shouldn't allow any other calls to
+the microservice. Now we are not allowing calls for a particular microservice but we shouldn't keep it in open continously.
+So we need to define the property for how much time we shouldn't allow calls for a microservice
+waitDurationInOpenState=30s //It will not allow any calls for 30s if the number of failures are greater than the failureRateThreshold
+Automatic from Open to Half-Open  - after making the application to wait for specified time before making any calls we shouldn't directly make it
+to allow all the calls at once. Instead we can make it half open i.e., allow only a specified number of calls by setting this property to true
+permittedNumberOfCallsInHalfOpenState=5 //We can configure how many number of callss we can allow in half open state 
+Again it will check for the failureRate. If the failureRate is again greater than the failureRateThreshold again it will stop making calls 
+for the specified number of seconds
+
+We need to add below dependencies for Resilience4j
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+		</dependency>
+These are the properties we need to set in resilience4j circuit breaker
+resilience4j.circuitbreaker.instances.addressService.sliding-window-size=10
+resilience4j.circuitbreaker.instances.addressService.failure-rate-threshold=50	
+resilience4j.circuitbreaker.instances.addressService.wait-duration-in-open-state=30000	
+resilience4j.circuitbreaker.instances.addressService.automatic-transition-from-open-to-half-open-enabled=true
+resilience4j.circuitbreaker.instances.addressService.permitted-number-of-calls-in-half-open-state=10
+
+Below are the propertries that need to be configured for actuator to work with resilience4j
+resilience4j.circuitbreaker.instances.addressService.allow-health-indicator-to-fail=true
+resilience4j.circuitbreaker.instances.addressService.register-health-indicator=true
+
+These are the 2 properties we need to configure for the actuator itself
+management.health.circuitbreakers.enabled=true
+management.endpoints.web.exposure.include=true
+management.endpoint.health.show-details=always
+
+In actuator the states of resilience4j will be shown like Up(All calls are allowed),Down(No calls are allowed),Unknown(few calls are allowed)
+
+We need to add annotation @CircuitBreaker(name="instancename") on top of the service where we are going to use these properties
+
+Resilience4j internally uses Spring AOP

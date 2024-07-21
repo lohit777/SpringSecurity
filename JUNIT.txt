@@ -1,0 +1,345 @@
+JUnit
+
+We will do testing for our application once we write our code
+We can test in 2 ways.
+1.Deploy the entire application and test. This is called system and integration testing
+2.Test specific units of application code independently.like a specific method or group of methods.This is called unit testing
+
+Using unit test we can find bugs early and it is easy to fix bugs and reduces costs in long run.
+
+Junit is a unit testing framework.
+
+Junit jupiter test is Junitfile.
+Tou need to create your junit test case in a different source folder not in the folder where your application is present.
+When we create a Junittest we will have a test method by default.
+In the test method we will have a fail method which we can execute if we don't get expected output
+In this method we will write multiple test conditions or Asserts.
+Only if these Asserts fail Junit will fail
+
+Junit doesn't gurantee the execution will be the same way which you have written tests.
+assertEquals(expectedvalue,originalvalue) ; -> It compares between expected value and evaluated value and the test case will be passed if they are equal or else the test case fails.
+There are many methods in assertEquals
+assertTrue(Originalvalue); -> It checks whether the result we got it true or not
+assertArrayEquals(arr1,arr2); Compares between 2 arrays
+
+Annotations
+@BeforeEach If we want to run anything before each unit tests we need to use this
+@BeforeAll If we want to execute any particular logic before all the test cases run we use before all. We need to make the method which is using BeforeAll
+as static
+@AfterEach  If we want to run anything after each unit tests we need to use this
+@AfterAll  If we want to execute any particular logic after all the test cases run we use after all
+
+Mockito is popular unit testing frameworks
+When you write a unit test you don't want one service to depend on another.
+For these type of services we have stubs and Mocks
+src/test/java -> we will write testing in this folder
+
+spring-boot-starter-test dependency will have Mockito in it
+
+mock(interface or a class which you need to mock.class)
+
+
+@Test(timeout=100) // the test should run within 100 milliseconds
+@Test(NullPointerException.class) // Even if the test returns null pointer exception the test doesn't fail
+
+Junit supports something called parameterised tests. When you want to test a method with multiple inputs instead of passing it and  testing it again
+and again we can pass it as a parameter.
+
+We can combine multiple test files into a single file by creating a Junit Test Suite
+After creating a test suite if we run the suite then all the test  cases will run.
+
+Code coverage tells you how much application code you havre coivered with unit tests
+It will tell how many classes/methods/lines were invoked while running your unit tests.
+100% code coverage tells that 100% of your code is executed wheb you ran unit tests.
+
+In intellij you can right click and select run "classname" with coverage option to generate coverage code.
+Jacobo is the plugin which we need to get code coverage
+
+
+assertEquals(expected,actual,"Assertion failed because of this reason")
+We can give message when the assertion fails but it degrades the performance as it gets computed everytime whether the test passes or fails.
+So we can use lambda to represent thre message
+assertEquals(expected,actual,()->"Assertion failed because of this reason") message will be computed only during failure
+All the assertions come from Jupiter API class'
+assertNotEquals(excpeted,actual)
+assertNull
+assertNotNull
+assertThrows - it helps us to valiidate if the method under test throws an exception
+assertDoesNotThrow
+
+Test method naming convention
+test<System Under Test>_Condition or state change_<Expected Result>
+Ex;
+testIntegerDivision_WhenFourIsDividedByTwo_ShouldReturnTwo()
+
+We can also use @DisplayName annotation to make test methods more readable
+@DisplayName("Division 4/2=2")
+testIntegerDivision_WhenFourIsDividedByTwo_ShouldReturnTwo()
+When running tests the displayname annotation will give the output.
+
+Arrange Act and Assertion
+In arrange/given we will arrange all ythe variables and classes that are needed by our test case
+In act/when we will invoke the methods we are testing
+Assert/then will help to validate the returned value  
+
+We can disabble a test using @Disabled("any message") - with this the test method will be disabled and we can give a message for that test
+
+assertThrows(ArithematicException.class,()->{
+	//invoke the method 
+},message)
+This statement will expect to throw an arithematicException. If it is thrown then the test case is passed
+
+
+We can make our unit test to accept parameters
+We can annotate the method with @ParameterisedTest and @MethodSource
+@ParameterisedTest
+@MethodSource("Methodfromwhichwewantvalues") //Inside the MethodSource we need tyo give the method which passes the input values
+//We can also have the method source name as the same name as defined  for test. If thats the case then we need not give the method inside the methodsource
+public void test(int a,int b,int c){
+code logic
+}
+
+private static Stream<Arguments> Methodfromwhichwewantvalues(){
+return Stream.of(
+Arguments.of(32,1,31),
+Arguments.of(20,1,19),
+Arguments.of(1,1,0)
+};
+}
+Like this we can pass how many input parameters we want and the method will run for all the parameters.
+
+Instead of method source we can also use another anotation called CSVSOURCE
+@CsvSource({
+	"33,1,32",
+	"21,1,20",
+	"54,1,53"
+	}) - Like this we can pass multiple input parameters to our unit test using CsvSource.
+As we are not using methodSource we dont need the method which is inside the methodsource annotation.
+
+Instead of passing values like this we can also store the parameters in a file and use it. For that we need to use the annotaion @CsvFileSource
+@CsvFileSource(resources="/filename") - this file should be in resources folder
+Each set of parameters we need to give in a new line
+
+@ValueSource is also used to accept parameters with a particular datatype. It will only accept one method
+@ValueSource(strings={"Lohit","bala"})
+
+
+@RepeatedTest(3) -> this annotation will make the trst method to run 3 times and see if it is repeated if the test method still succeeds
+
+We can get repetition info by passing the object repetitioninfo to the test method
+We have different methods in repetitioninfo object like getcurrentRepetition(),getTotalRepetitions() -> total no of repetition.
+
+We can also pass TestInfo method to the test method to get information of our currently running test method.
+testInfo.getTestMethod().get().getName()
+
+We can also give name for each repeatable tests using template variables
+@RepeatedTest(value=3,name={displayname},Repetition {currentRepition} of " + "{totalRepition}")
+
+We can also define the order how our method can run
+For that we need to annotate our test class with @TestMethodOrder
+@TestMethodOrder(MethodOrderer.Random.class) -> This will run our methods in a random order
+@TestMethodOrder(MethodOrderer.MethodName.class) -> This will order our tests based on the methodname in alphabetical order
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class) -> This will order our test method any way we like
+We need to give @Order(priority) annotation in each of the test method with the index
+
+We can also define in which order the test classes should run using @Order annotation. We can give @Order(index) annotation on top of the class and specify the
+index inside the order annotation and the test classes will run based on the index.
+We can also define globally which method should run first and which one should run second.
+We need to create a resources folder and specify the configuration in it in which order we need to execute the methods.
+junit-platform.properties - we need to define the order in this properties file 
+
+By default Junit creates a new instance of a test class for each test method
+We can change it and make junit to runn all the methods in a single test instance
+For that we can use @TestInstance(LifeCycle.PER_CLASS) for the class. Using this you can create single test instance per class.It is used for
+integration tests
+
+In test driven development first we will write unit test first and then we will write application code to make this unit test pass
+In test driven development lifecycle we will follow following steps 
+Red -> Write unit test that fails
+Green - Write application code to pass our failed test
+Refactor - clean up improve unit test and improve our code
+Repeat - Repeat all the steps until all your functionality is implemented
+
+maven-surefire-plugin
+
+We need to stop writing our code as soon as we see that the unit test fails
+
+Mockito is an open source testing framework created for java. It allows us to easily create test doubles object in unit tests.
+Test double is an object that can stand in for real object
+
+We need to add a mockkito junit jupiter for using mmockito dependency
+junit-jupiter for junit dependency
+
+@ExtendWith(MockitoExtension.class) - this will help us to use mockito in our test class
+
+Mockito.when(userRepository.save(Mockito.any(User.class)).thenReturn(true) - it tells whatever the input when calling save method we need to return
+true
+
+We can use verify method in Mockito class to tell that save method is called only once
+
+Mocito.verify(userRepository,Mockito.times(1)).save(Mockito.any(User.class)) - it takes 2 parameters mocked class and number of times it is invoked.
+We need to specify which method should be invoked also
+The number of times it should be invoked is by default 1
+
+Mockito.atLeast(2) - 
+Mocito.atMost(2)
+
+when(userRepository.save(Mockito.any(User.class)).thenThrow(RunTimeException.class); - throwing an excpetion
+For void methods the4 above statement doesn't work with void methods as void doesn't return anything
+For such type of methods we need to use below method
+doThrow().when(userRepository).save(Mockito.any(User.class);
+
+doNothing().when() - you are telling Mockiuto to do nothing when this method is called
+
+Even though we mock the class there might be scenarios where we need to call real method under the mock object
+doCallRealMethod().when(emailVerificationService).scheduleEmailConfirmation(any(User.class)) - this will call the real method
+
+Code coverage tells how much of application code is covered in unittests
+
+maven-surefire-report-plugin - this is to generate the code coverage report in xml file
+Normally even if there is a one failing test case it will not generate a report. 
+If we want to generate report even if there is a failing test case then we need to add <testFailureIgnore>true</testFailureIgnore>
+
+mvn test - to run the test phase
+
+SonarQube is a continous code quality tool where we can check our code smells bugs and code vulnerability
+In sonarQube there are some rules.  Based on the rules it will identify which is the bug which is correct code and that will be displayed on sonar
+dashboard so we can easily fix.
+
+You can download the sonarcube or use it from online by signing up with github and adding our code to this sonarQube
+
+Run as Maven Install - to get the jar file
+
+<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.4.0.905</version>
+			</plugin>
+			<!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.1</version>
+			</plugin>
+
+		</plugins>
+	</build>
+We need to add above ddependencies to enable sonar and Jacoco plugin for code coverage
+
+After adding we need to go to the folder where we have  installed sonarQube from commandline and give StartSonar.bat so that SonarQube will start
+By defualt it will be available in port 9000
+
+We need to click run as Maven build  and run below command in goals for  code coverage
+clean org.jacoco:jacoco-maven-plugin:prepare-agent install
+For sonar we need to give sonar:sonar in goals after maven build
+After that we can go to 9000 port to check for code smells, bugs and vulnerability
+If we dont handle  exceptions or  dont use a variable or write system.out.println statements or package name is not proper then it comes under code smells
+
+We can check rules under rules tab and code smells,bugs in Issues tab and we can rules in rules tab.
+
+SonarQube is a static testing tool
+It helps to find errors earlier in development
+It detects overcomplexity in code
+Find security errors
+Enfoorces best coding pratices
+It automates and integraetes with jenkins
+We can create project specific rules
+
+Technical debt is the debt that causes errors in future.
+
+Feature of sonarQube
+SonarQube can detect bugs  on pieces of code that it feels faulty.
+Code smellls are characteristics of a code that indicates that there might be a problem that may be caused by code in future
+SonarQube can detect security vulnerability
+You can create and maintain different sets of rules that are specific to particular projects these are known as Quality profiles
+It keeps working in the background from the development phase itself.
+To initiate tests we can do that through an API call.
+Integrate with github
+It will show the memory leaks in your application
+It is a good visualiser. It gives simple overviews of overall healt of your application.
+It can enforce a quality gate you can tell sonarQube based on your requirement and practices what code is correct and what is wrong.
+There is a plugin called SonarLint which helps sonarQube to integrate itself with an IDE  so that there is no need to install the whole SonarQube
+package. 
+
+Jacoco plugin is added to export the code coverage in html report
+We need to add 2 execution phases first execution phase to do some initialisation for Jacoco and second execution phase and the second execution
+will make Jacoco to execute its report.
+After adding those we need to run the command mvn clean test. It will clean all the files from the directory and execute test phase.
+After the execution is completed we need to go to our folder and in that we need to  go to target folder and in the target folder we have a
+folder called site and in that we will have jacoco and in that we will have index.html
+It will give the entire code coverage information like missed instructions missed branches(like if,else) code coverage %
+We will also have pshycomatic complexity. The more the if else statements the more the complexity.
+We will be able to see missed classes,methods,
+
+mvn package will compile and package our project to a jar file.
+To execute our unit tests while our build lifecycle we need to add a plugin maven-surefire-plugin
+
+If there is any change in the config server file then for the microservices to get that change we need to hit actuator/refresh for all the instance 
+of the microservice so that the change in config server will be picked up.
+But if we add spring-cloud-starter-bus-amqp dependency and when we hit the url busrefresh then all the instances of the microservice will pick the 
+updates from the git repository.
+We can add a webhook also so that when there are changes in the config server without explicitly refreshing the microservice using refresh-bus 
+all the instances of the microservice will be updated 
+
+To start sonarQube after downloadiung we need to start startsonar.bat file which will start the sonarqube on port 9000
+
+<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.8.0.2131</version>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+After addingf these dependency in pom.xml file you need to click on run as and select maven build and give below command under goals
+clean org.jacoco:jacoco-maven-plugin:prepare-agent install -> This is for code coverage which will be stored in jar file in the target folder
+sonar:sonar -Dsonar.login=tokenvalue generated from sonarQube
+For the token we need to go to My Account and in MyAccount we need to  go to security and inside it we need to enter tokenname and the token will be 
+generated
+We can set the quality gate status like if the code coverage is greater than 80% then only build should be successful.
+
+First we need to install SonarQube and then we need to go to installed folder in that go to bin folder and in that our OS and in that
+ start StartSonar.bat file so that sonar starts. By default it will start in 9000 port
+ When we first start the batch file it will ask for username and password. Default is admin
+ <execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution> - this means the repport goal is to create a code coverage report
+					
+clean org.jacoco:jacoco-maven-plugin:prepare-agent install - when we run this in maven build goals then in target a new folder will be created called site
+Inside site we will have a folder called jacoco inside which we will have a index.html file which will have code coverage information.It will also
+have jacoco.xml file which will be automatically picked by sonar dashboard and the dashboard shows the coverage report on the screen
+run as maven build and inside goals we need to give below 
+sonar:sonar -Dsonar.login=tokenvalue generated from sonarQube
+For the token we need to go to My Account and in MyAccount we need to  go to security and inside it we need to enter tokenname and the token will be 
+generated

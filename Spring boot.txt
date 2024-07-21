@@ -1,0 +1,35 @@
+Add spring web dependency to build spring boot rest api through spring initialiser
+Once spring boot project is created and we launch that application it will be launched in tomcat server.
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+
+these 2 are responsible for adding all the maven dependencies
+
+
+Goal of spring boot
+Spring boot helps us to build production ready applications quickly
+Below applications are helpful in building spring projects quickly
+Spring Intialiser - it helps to easily create spring projects
+Spring boot starter projects - it helps to quickly define dependencies to projects
+Spring boot dev tools  - this will help to make application changes without having to manually restart the server
+Spring boot auto configuration - it will automatically provide configuration based on the dependencies in the classpath
+
+
+Production Ready -> spring boot provides a number of features to get our application production ready like below:
+default loggings
+different configuration for different environment
+ -profiles, configuration properties
+monitoring(spring boot actuator) -> we can monitor the application like memory etc
+
+Spring boot starter projects -
+We need a lot of frameworks to build application features

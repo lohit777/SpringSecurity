@@ -1,0 +1,312 @@
+C:\Program Files\Java\jdk-17\  - jdk folder path
+
+Spring framework creates objects.
+When we give @component on the class spring automatically creates beans for those components.
+Bean is something which creates instance of a component
+If a class is dependent on another class we will autowire the class.
+
+If there are multiple components autowired to a single component we need to give @Primary above @Component to execute a single component
+
+@Component - class managed by spring framework
+@Component scan - it will scan for components in the current and sub packages. It will be present in @SpringbootApplication
+Dependency injection : Identify beans, their dependencies and wire them together.
+Spring beans : An oobject maintained by spring framework
+IOC Container : Manages the lifecycle of beans and dependencies.
+Autowiring : process of identifying the dependencies and autowiring them.
+
+Springframework manages the lifecycle of your objects
+
+Maven will download Spring JARS that are needed by our application.
+spring boot starter and spring boot starter test will enable maven to download dependencies
+
+Important features of maven dependencies:
+Defines a simple project setup that follows best pratices.
+enables consistent usage across all projects.
+Manages dependency updates and transitive dependencies.
+
+Maven dependency is a JAR that spring needs.
+
+Dependency Injection types:
+Constructor based
+
+Setter based
+Field injection
+public class BusinessService(){
+@Autowired
+private DataService dataService -> Field based injection
+
+@Autowired
+businessService(private DataService dataService) -> Constructor based injection
+{
+this.dataService=dataService
+}
+
+@Autowired
+public void setDataService(DataService dataService){
+this.dataService =dataService
+}
+
+Spring recommends to use constructor based injection as dependencies are automatically set when an object is created 
+
+Spring boot is used to build microservices
+
+Setting up projects before spring boot was not easy.
+Dependency management(pom.xml)
+Define web app configuration(web.xml)
+manage spring beans(context.xml)
+Implement non functional requirements
+We used to do all these things before spring boot
+
+Groupid and artifactid in start.spring.io are similar to class and package name.
+Springboot will have an embeded server.
+
+@RestController is used to build a rest API
+@RequestMapping("url") -> if we want to hiht a url to get our course executed we will use RequestMapping
+
+Spring boot helps build production ready applications quickly.
+build quickly 
+spring initialiser
+spring boot starter projects
+spring boot auto configurations
+spring boot dev tools
+
+production ready 
+logging
+different configuration with different environments
+monitoring(spring boot actuator)
+
+Spring boot starter projects
+They provide convenient dependency descriptors for different features.
+Normally to buold a REST API you need Spring, Spring MVC, Tomcat etc .. for unit tests Spring Test Junit and Mockito are required. But Spring Boot starter projects provides all these under pom.xml.
+Spring boot starter web and spring boot starter test provides all these features
+
+Spring boot auto configurations:
+Normally we need many configurations to build spring app like component sca, dispatcher servlet, Data sources, JSON Conversion etc.
+Spring boot provides default auto configuration.
+Auto configuration logic is mentioned in spring boot autoconfigure jar in maven dependencies.
+In logs we will have conditions evaluation report which have both positive and negative matches.
+under positive matches we will have the things which are auto configured.
+Under negative matches we will have things which are not auto configured.
+
+Spring boot dev tools
+It helps to improve developer productivity.
+We need to add spring-boot-devtools dependency. If we want to restart the application whenever there is any change in code we will use spring boot dev tools.
+
+Profiles
+Profiles enables us to provide different cionfigurations for different environments
+
+Spring boot embedded servers
+old way of deploying application:
+install java
+install webserver
+deploy the application WAR
+
+Embedded server
+install java
+run JAR file // this is because webserver is part of our jar file
+
+to run jar file command -> java --jar "jarfilename"
+To get jar file name click "Run as " -> "maven build" -> under goals give clean install -> this will build the jar file and give the jar file name
+
+Spring boot Actuator:
+It helps to monitor and manage your application.
+It provides a lot of endpoints like 
+beans-it gives all the beans in your app
+Metrics - Application metrics
+health - Application health information
+
+Mappings - Details around request mappings
+
+To make use of it add spring-boot-starter-actuator dependency
+
+metrics is important endpoint along with health
+http.server.requests in metrics provides the number of times application is hit.
+
+Spring boot vs spring mvc vs spring
+Spring :its all about dependency injection. Identifying the dependencies and autowiring them.
+@Componentscan
+
+Spring mvc : it simplifies building web apps and rest API
+@Controller, @RestController,@RequestMapping
+
+Springboot : it is a spring project. It provides lot of auto configurations embedded server.it provides default logging and error handling.
+it also provides profiles and configurationproperties. It enables monitoring our application.
+It makes easy to build variety of applications.
+
+Spring mvc
+@RequestMapping -> it allows to map a url to the method.
+@Controller -> to create REST API we need to give controller above class name otherwise spring framework will not manage this class.@Controller is used for web requests
+@ReponseBody -> if we want to return the text/message as is to the browser from the method we will use this.
+
+JSP - Java server pages
+If we want to return a large data if we hit a particular url it will be really difficult. So we will use JSPs
+It is a view technology.
+
+JSPs should be created in below folder 
+/src/main/resources/META-INF/resources/WEB-INF/jsp/ - this is the folder. It will be there by default in springboot.
+
+
+You can write your html file directly in your JSP file.
+JSP is called view
+We can add the jsp path prefix and suffix path directly in application.properties
+spring.mvc.view.prefix = /src/main/resources/META-INF/resources/WEB-INF/jsp/ - for spring mvc this is the prefix
+spring.mvc.view.suffix=.jsp
+
+If we don't want to print the message as is after hitting the url we need to remove @ResponseBody.
+
+We need to add tomcat embedded server dependency also in pom.xml with scope=provided
+
+How does web work
+Whenever we execute a url browser sends a http request to the application.
+Server handles the request and returns the response. 
+
+@RequestParams -> if we want to pass some information to the url then we can do with help of queryparams.
+It is a annotation which indicates that a method parameter to bound to a web parameter
+//http://localhost:8080/login?name=Lohit
+If we want to pass anything from your controller to JSP we can do it with the help of ModelMap
+In the above url if we want to pass name we will use Modelmap
+
+If we want to put anything from controller we will use model.put() in our controller method.
+To use the values passed from controller in JSP we will use ${name}.
+Then this name which you pass in url will be displayed on screen.
+
+logging.level.packagename = info -> in this way we need to configure logging in application.properties
+
+We can write user defined logging statements also.
+Syntax:
+private Logger logger = LoggerFactory.getLogger(getClass()) ;
+logger.debug("Request param is {}", name);
+The last statement will be logged.
+m
+If you don't want the last statement to printed than you can change the logging level to info level.
+
+Spring mvc working
+Earlier all the code like page flow,databases etc. used to be in Views(JSPs..) // this is called as Model 1 Architeture where everything will be in jsps without any Controllers
+
+Later Model 2 Architecture is implemented. It has Models view and controller so that the code is seperated.
+Model is the data to generate the view.
+View is responsible to show information to user.
+Controller controls the flow.
+The concern in this is how to implement all the common features to  all controllers
+
+Model2 Architecture - Front Controller
+In this all the requests from the browser goes to only one controller.therefore security and things like authorisation will be easier to implement.
+All the security authorisation can be done in Front Controller and then it can be forwarded  to the right place(controller/view/servlet).
+Front controller controls flow to controllers and views.
+Common features can be implemented in front controller.
+
+Dispatcher Servlet is the spring MVC implementation of the Model 2 front controller pattern.
+
+All the HTTP Requests are accepted by Dispatcher Servlet.
+Once it receives the request it tries to process it with the help of model view and controller
+
+First it identifies the correct controller method based on the url hit.
+Once it identifies the controller method it will try to execute the controller method.
+Controller method returns  view name and puts data into model.
+Then it tries to identify correct view.
+View resolver maps the view to correct one.
+Then it will execute the view.
+Then it sends HTTP Response.
+
+View resolver maps jsp name to the path where it is present
+
+Each request details will be present in that page itself. 
+Any variable associated to the request will be available to that request itlself.
+If you want to use a particular value used in one page to be used in next pagwe need to use @sessionattributes("attributename") for the page where it is initialised as well as in the page where we need to use it.
+ 
+
+JSTL tags
+To use JSTL tags we need to add below dependencies
+<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+and
+<groupId>org.eclipse.jetty</groupId>
+			<artifactId>glassfish-jstl</artifactId>  - now it is changed to jakarta.servlet.jsp.jstl
+
+JSTL tags allow ius to get the data in proper format
+
+Bootstrap - Instead of manually installing bootstraps we can use webjars to automate it. 
+Bootstrap is a CSS technique used for styling
+We can download bootstrap as a webjar
+If we don't use webjars we need to manually install bootstrap.
+We need to add a dependency to install bootstrap and we need to sepcify a version while installing it.
+Generally for other dependency versions are managed by spring but for bootstrap(or any static) we need to add dependency explicitly.
+Below are dependencies need to be added for Bootstrap
+
+<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>5.1.3</version>  -Version will not be loaded directly for bootstrap so we need to explicitly give the version
+		</dependency>
+		
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>3.6.0</version>
+		</dependency>  
+
+/META-INF/resources/webjars/bootstrap/5.1.3/css/bootstrap.min.css  We will have bootstrap css in this path. It is the minimised version of bootstrap which is recommended
+
+/META-INF/resources/webjars/bootstrap/5.1.3/js/bootstrap.min.js
+/META-INF/resources/webjars/jquery/3.6.0/jquery.min.js 
+The above 3 files we will use in jsp files
+
+In bootstrap we will keep all the divs in container class
+We need to keep all the tables in tables class in bootstrap
+
+class="btn btn-success" signifies that the particular link is a button and we want the user to click the button
+btn-success will give a nice background to the button
+
+
+Validation with spring boot
+4 steps
+Spring Boot Starter validation - It is a starter project and we need to add it in pom.xml
+2.Command Bean(form backing object) - When we do this we will do 2 way binding(todo.jsp and todocontroller.java)
+3.Add validations to the bean like the description should be 10 characters in length
+4.Display validation errors in the view(todo.jsp)
+
+If we have multiple values which we need to bind/accept from user instead of using requestparam we can directly bind it to bean using command bean.
+This is the concept of command bean
+
+2 way binding binds from the bean to the form and the form to the bean.
+In Get method you will map default values to ToDo and in POST method we will map the values which we have given in Get method to Todo.
+It geenerally binds the values to the form in get method and in post the values given in the form will be bind to the bean(Todo) and displayed on screen.
+
+We can add our validations to the application like the size of the field should be 10 characters etc.
+All these validation classes will be under jakarta validation api.
+Few of the classes are size,NotBlank,NotNull etc.
+To declare validation we need to give @classname on the variable where we need to implement the validations.
+Ex;
+@Size(min=10,message="Enter at least 10 characters")
+String description;
+This means the size of description should be 10 characters.
+
+When we use any validator we need to give @valid near form backing object for the class for which we need to validate
+
+If we want to pass a variable in jsp to another link we can use of queryparameter.
+Syntax :<a href="delete-todo?id=${todo.id}"
+Here we are passing todo.id as a queryparameter in the link delete-todo for the variable id
+url?id={variablename}
+
+parsers in spring framework are used to parse XML configuration files and convert them into corresponding Spring beans or objects. 
+
+Annotations for Validation:
+@NotNull: Indicates that the annotated element must not be null.
+@NotEmpty: Indicates that the annotated string must not be null or empty.
+@NotBlank: Indicates that the annotated string must not be null, empty, or contain only whitespace.
+@Size: Specifies the size constraints for a string, collection, or array.
+@Min and @Max: Specify the minimum and maximum values for numeric fields.
+@Email: Validates that the annotated string is a valid email address.
+@Pattern: Specifies a regular expression pattern that the annotated string must match.
+Validation Annotations for Object Graphs:
+@Valid: Indicates that the annotated field or method parameter should be validated recursively.
+@Validated: Similar to @Valid, but it can be applied at the class level and supports group validation.
+
+Spring boot Admin server
+Application Monitoring: Spring Boot Admin Server provides a centralized dashboard for monitoring multiple Spring Boot applications deployed in a microservices architecture.
+Health Status: It displays the health status of each application, indicating whether the application is up or down and providing details about health indicators.
+Metrics Visualization: Spring Boot Admin Server visualizes metrics collected from Actuator endpoints, allowing you to monitor performance metrics across multiple applications.
+Logging and Configuration: It offers features to view and modify logging configurations, environment properties, and other settings for individual applications.
+Alerting and Notifications: Spring Boot Admin Server can be configured to send alerts and notifications based on health status, metrics thresholds, or other criteria, enabling proactive monitoring and issue resolution.
+Historical Data: It maintains historical data and trends for metrics and health status, allowing you to analyze performance over time and identify patterns or anomalies.
+

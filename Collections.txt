@@ -1,0 +1,54 @@
+Collections
+
+   List<String> myList = List.of("ant","bat","cat") ;
+
+List<String> myListAl = new ArrayList<>(myList) ;
+
+for(String op : myList){
+  if(op.endsWith("at"))
+   System.out.println(op);
+
+If you want to remove a word from a list you can go with iterator instead of enhanchedforloop
+
+   List<String> myList = List.of("ant","bat","cat") ;
+
+List<String> myListAl = new ArrayList<>(myList) ;
+
+Iterator<String> iterator = myListAl.iterator() ;
+
+ while(iterator.hasNext()){
+     if(iterator.next().endsWith("at"))
+     {
+         iterator.remove() ;
+     }
+ }
+
+	    
+		System.out.println(myListAl);
+
+In a list you cannot store primitives
+ List<Integer> myList = List.of(101,102,103,104) ;
+
+List<Integer> myListAl = new ArrayList<>(myList) ;
+
+myListAl.remove(Integer.valueOf(101)) ;
+System.out.println(myListAl);
+
+If you want to remove a integer present at index 0 we can't give 101 directly in remove method because remove method accepts only index or an object. So, when we give 101 directly in the method it will take it as an index and throw an error.
+
+We can't use Sort method directly in a list without comparator
+We need to use sort method in collection.
+
+List<Integer> myList = List.of(135,1032,113,107) ;
+List<Integer> myListAl = new ArrayList<>(myList) ;
+Collections.sort(myListAl) ;
+System.out.println(myListAl);
+
+Set doesn't allow duplicates
+
+Tree helps us in reducing costs for search,insert and delete operations\
+
+PriorityQueue will store elements in natural order
+
+Map doesn't implement collection interface
+

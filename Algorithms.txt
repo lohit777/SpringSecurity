@@ -1,0 +1,38 @@
+Asymptotic analysis is the best way avaailable for analysing algorithms
+Advantages:
+Asymptotic analysis provides a high-level understanding of how an algorithm performs with respect to input size.
+It is a useful tool for comparing the efficiency of different algorithms and selecting the best one for a specific problem.
+It helps in predicting how an algorithm will perform on larger input sizes, which is essential for real-world applications.
+Asymptotic analysis is relatively easy to perform and requires only basic mathematical skills.
+Disadvantages:Asymptotic analysis does not provide an accurate running time or space usage of an algorithm.
+It assumes that the input size is the only factor that affects an algorithm’s performance, which is not always the case in practice.
+Asymptotic analysis can sometimes be misleading, as two algorithms with the same asymptotic complexity may have different actual running times or space usage.
+It is not always straightforward to determine the best asymptotic complexity for an algorithm, as there may be trade-offs between time and space complexity.
+
+Searching algorithms ;
+Linear Algorithm : It will check the element one by one and reach the end if element is not found.Its done for non sorted array
+Binary  :It is done on sorted elements.Divide the size of arrray into 2 and move to right if the mid element is less than target and left if is greater
+Ternary : Divide it into 3 instead of 2 parts
+Jump search :It is better than linear but less than binary in time complexity
+Let’s consider the following array: (0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610).
+
+The length of the array is 16. The Jump search will find the value of 55 with the following steps assuming that the block size to be jumped is 4.
+
+Jump from index 0 to index 4;
+Jump from index 4 to index 8;
+Jump from index 8 to index 12;
+Since the element at index 12 is greater than 55, we will jump back a step to come to index 8.
+Perform a linear search from index 8 to get the element 55.
+
+Linear Search: Arrays are ideal for linear search due to their contiguous memory layout.
+Binary Search: Binary search is most efficient with sorted arrays, as it can divide the array into halves to quickly narrow down the search space.
+Hashing: Hash tables are used in scenarios where fast and efficient lookups are required, such as in databases or in-memory caches.
+Binary Search Tree (BST): BSTs allow for efficient binary search and range queries. The data is organized in a hierarchical structure, where each node contains a key and a value.
+
+Depth-First Search (DFS) and Breadth-First Search (BFS): These algorithms are typically used for searching in graphs and tree structures. DFS explores as far as possible along each branch before backtracking, while BFS explores all neighbor nodes at the present depth before moving to the next level.
+Hash-based Search: This type of search relies on a hash function to map keys to their associated values in a hash table. It provides constant-time average-case lookup, making it very efficient for large datasets.
+
+To apply Binary Search algorithm:
+
+The data structure must be sorted.
+Access to any element of the data structure takes constant time.

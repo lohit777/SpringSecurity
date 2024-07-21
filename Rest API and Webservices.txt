@@ -1,0 +1,327 @@
+Webservices
+It is a software system designed to support interoperable machine-to-machine interaction over a network.
+
+Webservices are designed for machine to machine(application to application) interaction
+They should be interoperable
+They should allow communication over a network
+
+Input to a webservice is request and output from webservice is response.
+The request and response to the webservice should be platform independent so that the webservice also becomes platform ind  ependent.
+We have 2 formats for request and response
+1.XML -> We can generate XML from any platform
+2.JSON -> It is supported by a wide variety of platfoorms
+
+Every web service offers a service definition
+Service definition helps us to know format of the request/response, Request/response structure, it also provides the endpoint
+
+Request is input to our webservice and response is output to our webservice
+Message Exchange format is the format of request and response
+
+Service Provider -> It is the one which hosts the webservice It is the server
+Service consumer is the one which is consuming the webservice . It is the client
+Service Definition is the contract between the service provider and consumers
+
+Transport -> It defines how a service is called
+If the service is exposed through internet I will  be given a url and call it. -> HTTP
+If  the service is exposed over a Queue -> MQ
+
+Types of WebServices
+1.SOAP  -> It poses  restrictions on the format of the XML which is exchanged between your service provider and consumer
+Simple Access Object Protocol
+In SOAP we use XML as request sharing format.
+SOAP defines a specific XML request and response structure
+In the structure we need tto have a header and a body
+Header contains meta information like authentication,Authorization,signatures etc.
+Body is where you put real content of your request/resposne
+SOAP defines a format for your request and response and SOAP doesn't pose any restrictions on your transport
+In SOAP service definition is typically done using something called web Service Definition(WSDL)
+A WSDL defines a endpoint where your service is exposed. It defines all the operations that are exposed.It specifies a request and response structure
+
+2.REST -> It defines a architectural approach.
+REST services will make best use of HTTP
+The request and Response are in a format which is defined by HTTP.
+When we type a URL in the browser it sends a GET request to the server and server sends back a response
+HTTP also uses something called Request methods like GET,POST,PUT,DELETE
+Http Response will contain something called response codes like 200,204,400,401,500
+
+A resource is anything that you want to expose to the outside world through your application.
+A resource has as URI
+
+SOAP VS REST
+In SOAP the data exchange format is always XML. In REST there is no strict data exchange formart
+For service definition SOAP uses WSDL while REST doesn't have any. But there is swagger which is a service definition.
+As far as transport protocol is considered SOAP doesn't pose any restrictions you can use HTTP or MQ but in REST we should use HTTP only.
+
+Every request goes to diispatcher servlet because dispatcher servlet is mapped to root url = /
+dispatcher Sevlet is configured because of something called auto configuration
+Spring boot automatically configures dispatcher  -DispatcherServletAutoConfiguration
+
+@ResponseBody+JacksonHttpMesssgeConverters
+When we return a bean as is there is a message conversion that would happen which is setup by Springboot Auto configuration is using Jackson HTTP message
+and this is also auto configured ->JacksonHttpMesssgeConvertersConfiguration
+As it is auto configured the response of a bean would be in JSON format.
+
+Error mapping is also auto  configured -> ErrorMvcAutoConfiguration
+
+All the jars are availble to us due to Starter Projects (spring boot Starter web) like spring webmvc spring web ,Springboot starter tomcat,springbootstarter json
+All the above are auto configured because of spring-boot-starter-web
+ 
+Accepting varibale in a path  is path variable 
+
+To be able to play with a database and be able to perform specific operations on a database you would create a Data Access Object(DAO)
+
+Resourcde not found 404
+Server exception 500
+validation error - 400
+
+200-success
+201-created
+202- if it doesn't update any content
+401 - unauthorised
+
+Location header returns the location where you created a resource and we can mention it after creating a resource
+Response entity.created will return the location uri
+	//ServletUriComponentsBuilder.fromCurrentRequest() -> this gives the current location request of the uri i.e, users in this case
+We are appending path to it using path method path(/"{id}") and replace this id by the id which is inserted
+Ex :
+	URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userSaved.getId()).toUri() ;
+We need  to convert the location to URI 
+We need to return it using below statement
+	return ResponseEntity.created(location).build(); 
+
+We can throw an exception if resource is not found by creating a class which extends RunTimeException and have a annotation called
+@ResponseStatus(Code=HTTPSTATUS.NOT_FOUND) on the top of the class   and throw that exception whenever a resource is not found
+
+We run java class to launch application whereas we run Jar file in PROD
+When you run a JAR file dev toolss is automatically disabled
+
+When we try to get a resource which is not existing we will get a structured response back in Talend API tester
+But  we  can define our own custom structure
+
+ResponseEntityExceptionHandler is the standard class which handles all the spring mvc exceptions and it returns formatted error details
+Fundamental expectional handler is handleException method which is present in ResponseEntityExceptionHandler class
+We can override this method and create our own exception
+
+@ControllerAdvice is a specialisation of components for classes that declare @ExcpetionHandler,@InitBinder or @ModelAttribute methods to be shared
+across multiple @Controller classes
+
+To add validations to your rest API you need to add a dependency called spring-boot-starter-validation
+To make sure that any class is valid we need to add @Valid annotation before the class which we are trying to validate
+Constraints defined on the object and its properties are validated when theproperty, method parameter or method return type is validated. 
+When you give @Valid annotation whenever the binding happens the validations which are defined on your objject are automatically invoked.
+
+We have multiple validations constraints like @Size(min=2) ,@Past which we need to give on the top of the attribute which needs to be validated
+@Valid is specific to the class whereas the constraints are specific to the attributes inside the class
+
+We have a method in   ResponseEntityExceptionHandler called handleMethodArgumentNotValid which handles the method argument not valid exception.
+We need to override it and define our own method and return our response
+By default it will give a message if validation fails for any specific reason.
+The message will be long
+So we can write a message where we are validating the attribute itself like @Size(min=2,message="The size should be minimum  2 characters")
+It is used to throw exception only if validation fails
+Depending on the use case you can customise the error message
+We can customise the error message it using the MethodArgumentNotValidException present in the parameter of handleMethodArgumentNotValid
+For example
+		//ex.getFieldError().getDefaultMessage() -> if there aer multiple arguments failed for validation then this method gives the first message
+ex.getErrorCount() -> it will give the total number of eerors 
+
+
+REST API Documentation
+Your REST API Consumers need to understand your REST API like resources actions , thre request and response structure what are the constraints and validations
+
+You need to ensure your REST API documentation is upto date and correct
+You might have 100s of REST API in an enterprise. you need to ensure consistency
+
+You can maintain REST API Documentation using 2 options
+1.Manually maintain Documentation but if you maintain manually you need to keep effort to keep it in sync with code
+2. Generate from code
+
+Swagger
+Swagger specificationb is a type of documentation to store your REST API documentation. It came in 2011
+Swagger provided a number of tools to visualise this documentation
+In 2016 open API specification was created based on this swagger specification
+A number of large enterprises came in and there was an open standard called Open API specification which was created as a standard for documenting
+your REST API
+Swagger Tools still continue to exist
+OpenAPI specification is nothing but a standard language agnostic interface to define your REST API
+Swagger UI visualise and interact with your REST API
+
+The library which we will be making use of to automate the generation of our API documentation is called springboot openAPI
+Search for springdock openapi in google and you ewill find a github page.
+In that use 2.x version as it supports springboot vversion 3
+<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		
+We need to add below dependency to enable openAPI
+After it is added we need to go to below url
+http://localhost:8080/swagger-ui.html
+and we can see documentation of our API in here
+http://localhost:8080/v3/api-docs
+It will have openApi specification
+We will have all the detauils of our API
+
+Content Negotiation
+Same resource  has a same URI however different representations are possible
+You can have different content type like XML or JSON
+
+The consumer can tell you which representation they need. Thats where content negotiation comes into picture
+A consumer can send things like accept header when sending a request
+application/JSON,application/XML
+
+Another thing is you can add a accept language  header as part of your request
+In content negotiation consumer and service provider negotiate with each other
+The consumer tells the content provider what type of representation they want like JSON or XML
+
+<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		
+After adding this dependency and when we add a header accept application/JSON in API TESTER we will get the response in XML format.
+
+i18n - Internationalisation
+There might be multiple users accross the world who might use your application so for all the users to understance the language we use Internationalisation
+As part of our request we send a request called accept language
+Accept-language header indicates natural language and locale that the consumer prefers
+As part of our request we send a header called accept language
+The accept language header indicates natural language and locale the consumer prefers.
+ex: en for English
+We need to create a new file and name it messages.properties and add the configurations into it
+
+Versioning REST API
+Whenever we have breaking changes to implement thats when we can version our REST APIs
+You can have version 1 and implement a change in version 2 but leave version 1 as is. Whenever consumers need older version they can use version 1 as usual
+but if they need new changes they can move to version 2
+you can version your API based on the URL
+2.Based on a request parameter.
+3.You can use request header 
+4. use mediatype also for versioning
+
+For versioning using URL we can just have different urls for different version. for first version we can have v1/person and for 2nd version v2/person
+
+Different factors you need to consider before versioning are below
+When you use URI versioning and Request Parameter versioning you are polluting the URI but for media and header versioning the URI will  be same so less
+chance of URI pollution
+HTTP Headers were never meant for URI versioning. So headers and mediatype versioning misuse the HTTP Headers
+3.Caching - you cannot cache based on just url in both headers anfd mediatype versioning as it is same 
+4. you can execute your request on the bbrowser using request parameter versioning as well as URI versioning whereas it cannot be done for Mediatype versioning
+and headertype versioning
+5.API doocumentation based on URI versioning and Request parameter versioning is easy as the URI is different for each version
+
+HATEOAS -> HyperMedia as the Engine of Application State
+HATEOS helps us to enhance our REST API to give the data back as well as give information to users on the subsequent actions to be performed
+
+Implementation options to implement the subsequent options to be done by consumer
+1.Custom Format and Implementation -> It is difficult to maintain
+2.Use Standard Implementation
+HAL(JSON Hypertext Application language) -> It is a simple format that gives a consistent and easy to hyperlink between the sources in your API
+It defines how can you linnk to other resources in your REST API
+To generate this kind of responses(i.e., the links which we have links to other APIs) we can make use of Spring HATEOS. It generates HAL responses with
+hyperlink to resources
+
+We need to add below dependency
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		
+To create a response with data and link we could make use of a couple of important concepts called Entitymodel and WebMvcLinkBuilder
+When we want to make use of HATEOAS and add links the first thing we would do is we would wrap the response in entitymodel.
+See the code for more clarity
+WebMvcLinkBuilder is used to build the links
+We will have a linkto method inside the class WebMvcLinkBuilder which will create a link pointing to controller method
+It will accept the classs in which the method is and the method from which we need to get the link from
+
+Customizing REST API responses
+Serialisation - Convert object to stream(Ex:JSON)
+Most popilar JSON serialisation in Java is Jackson
+
+We can customise field names in response using JSON annotation called @JSONProperty
+@JsonProperty("user_name") //In the JSON Response we will get the field value as user_name instead of name
+	private String name ;
+We can customize our response to only return selected fields. This is called filtering
+Ex: you dont want to send your passwords out
+There are 2 types of filtering
+Static filtering -> Same filtering for a bean across different REST API
+@JsonIgnoreProperties,@JsonIgnore -> If you want to filter out a field always as part of the API response the you need to give this annotation on
+the field which you need tto filter out
+and dynamic filtering -> customise filtering for a bean for specific REST API
+If you want to send a field as part of specific rest API but don't want to send as part of different rest api the we will use Dynamic  filtering
+@JsonFilter with FilterProvider
+
+There might be situations where you might want to return different attributes for same bean in different REST API.
+This is what is called  Dynamic filtering
+We will define the logic to filter in your REST API for dynamic filtering and thats where a class called MapingJacksonvalue can help us
+If you have  specific serialisation instructions that you want to map to your Jackson converter thats where we can make use of mapping Jackson value
+
+Spring boot actuator helps you to monitor and manage your spring boot applications in production.
+Spring boot Starter Actuator - Starter to add Spring boot actuator to your application.
+It will provide a number of endpoins like
+bean - complete list of spring beans in your app
+health - application health information
+metrics - application metrics
+mapping - details around request mappings
+
+http://localhost:8080/actuator/metrics/http.server.requests - It gives details of how many http requests were sent specific to this application
+http://localhost:8080/actuator/mappings - It gives details of all the mapped resources
+
+HAL(JSON Hypertext Application Language)
+It is a simple format that gives a consistent and easy way to hyperlink between resources in your API
+HAL Explorer is an API explorer for RESTful HyperMedia APIs using HAL
+If your APIs are  using HAL then you can use API explorer to explore your  APIs
+The biggest advantage of  using HAL explorer is that it enables your non technical teams also to play with APIs
+
+SpringBoot HAL explorer uto configures HAL explorer for Springboot projects
+spring-boot-rest-hal-explorer
+After adding this dependency go to http://localhost:8080/ then you will have Hal explorer come in
+When you give /actuators under headers then you will have the data,response status, response body and links everything inside it
+It will also show all the links inside the actuator endpoint
+
+DROP TABLE IF EXISTS User_Details;  
+CREATE TABLE User_Details (  
+id INT AUTO_INCREMENT  PRIMARY KEY,  
+name VARCHAR(50) NOT NULL,  
+birth_date TIMESTAMP NOT NULL  
+
+);  
+
+You want to launch MySql database as a Docker containter then we will have our application connect to the MySql database
+
+Use mysql-connector-j instead of mysql-connector-java if you are using Spring Boot 3.1 or greater.
+
+Remember: groupId is a little different (com.mysql instead of mysql)
+
+To run docker container as MYSQL container
+docker run --detach 
+--env MYSQL_ROOT_PASSWORD=dummypassword #We are creating a password for our container
+--env MYSQL_USER=social-media-user
+ --env MYSQL_PASSWORD=dummypassword 
+ --env MYSQL_DATABASE=social-media-database # we are creating a database with name social-media-database
+ --name mysql  we are giving the name of the container
+ --publish 3306:3306 mysql:8-oracle  we are checking in which port the application is running
+ 
+ mysql:8-oracle - this specific tag can run on any operating system
+
+	<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.33</version>
+		</dependency>
+		
+		This is the dependency we need to add to connect to mysql database
+		
+The statement in the data.sql will only be executed if you are talking to an in memory database
+
+Whenever we send a request spring security intercepts the requests and it would execute a series of filters and this is called spring security filter
+chain
+
+There are a series of checks that is done on your filter chains
+1) All requests should be authenticated
+2) If the request is not authenticated then by default a web page is shown asking login and password but for rest applications instead of web page
+a popup should be shown asking for credentials
+3)It will also enable check for CSRF
+We need to disable CSRF so that we can send POST requests
+
+SecurityFilterChain is used to match a filter chain against an HttpServletRequest in order to decide whether it applies to that request

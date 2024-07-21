@@ -1,0 +1,226 @@
+Spring framework terminology
+@Component -> it is a class managed by spring framework
+Dependency -> something that we need to create instance of a specific class
+Component Scan -> Spring framework will scan for components on the current package and its child packages.
+@SpringbootApplication will have @ComponentScan by default so  it searches for components with @ComponentScan
+To scan in other packages we can give as below:
+@ComponentScan({"Package","Package2"})
+We can also scan multiple packages as above
+Spring is Dependency injection.This is because it identifies beans, their dependencies and wire them together
+Dependency injection is also called inversion of control. This is because spring only creates objects for us 
+Spring is in control.
+Spring beans - An object managed by spring frameswork
+IOC Container - A technical component inside the spring framework which manages the lifecycle of beans and dependencies.
+Autowiring: process of wiring in dependencies for a spring bean
+@SpringBootApplication
+Indicates a configuration class that declares one or more @Bean methods and also triggers auto-configuration and component scanning. 
+This is a convenience annotation that is equivalent to declaring @SpringBootConfiguration, @EnableAutoConfiguration and @ComponentScan.
+@Configuration
+Indicates that a class provides Spring Boot application @Configuration. Can be used as an alternative to the Spring'sstandard @Configuration annotation so that configuration can be foundautomatically (for example in tests). 
+
+Application should only ever include one @SpringBootConfiguration andmost idiomatic Spring Boot applications will inherit it from @SpringBootApplication.
+
+@Bean is method level annotation @Component is class level annotation
+@Component is automatically created and managed by spring . @ComponentScan will automatically scan the components and create a instance of component
+Spring .
+@Component ->Instance of class will be managed by spring framework
+It is recommended while instantiating beans for your own application
+
+
+@Bean - it is explicitly defined in configuration class . @Configuration will scan for the bean
+@Conditional - it is an annotation used on beans specifying that the bean will be created only if the condition is satisfied
+We will have initmethod and destroty methods in bean which will be executed before bean initialision and after bean destruction
+Autowiring is done based on method call or method parameters in bean
+You can go for @Bean if you have lot of custom business logic you want to do before create a bean
+It is also used when you want to instantiate beans for 3rd party libraries 
+
+@Component Preferable for component scanning and automatic wiring.
+
+When should you use @Bean?
+
+Sometimes automatic configuration is not an option. 
+When? Let's imagine that you want to wire components from 3rd-party libraries (you don't have the source code so you can't annotate its classes with
+ @Component), so automatic configuration is not possible.
+
+The @Bean annotation returns an object that spring should register as bean in application context.
+ The body of the method bears the logic responsible for creating the instance.
+ 
+ Default initialision for spring beans is Eager
+ By default when you launch the application context the initialision will be happened automatically
+ 
+ If you don't want to happen the initialision automatically i.e., if you don't want to execute the logic in the class only once if you call/use it
+ then you can use @Lazy initialision on the class so that the class will not be initialised by default
+ 
+ Eager initialision is recommended when errors in the configuration are discovered immediately at the application startup.Memory consumption is more
+ In lazy initialization bean is initialised when it is first made use in application. Memory consumption is less.
+ 
+Bean Scopes
+In a normal class whenever you try to get the instance of a bean the instance will be the same always
+By default a normal class is a singleton bean scope.
+It creates one bean instance per one IOC Container
+It is used in stateless beans
+But when you make the class prototype each time you want to get the instance of that bean the instance will be changes
+If you want a different instance to be created each time the bean is referred to you need to go with prototype
+It is used in stateful beans
+@Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+
+Below are the other scopes for web aware SpringApplicationContext
+Request -> One object instance per one HTTP Request
+Session -> one object instance per user Http session.A session is typically associated with the user.Multiple requests belonging to the same user
+belong to the same session
+Application -> one object instance per web application runtime
+Websocket -> One object instance per websocket instance
+
+if we want to run some logic as soon as dependencies are qwired in we need to use @PostConstruct annotation on the bean/method which will execute
+the logic in postconstruct as soon as dependencies are wired in before doing any other task.
+
+We need to use @PreDestroy annotation when you want to do something before the bean is removed from the context
+
+Spring Singleton -> One object instance per IOC Container
+Java Singleton -> One object instance per JVM
+ 
+ BeanFactory -  
+ It is a fundamental container that provides the basic functionality for managing beans
+ It is suitable to build standalone applications.
+ It supports only Singleton and Prototype bean scopes.	
+ It does not support Annotations. In Bean Autowiring, we need to configure the properties in XML file only.	
+ BeanFactory will create a bean object when the getBean() method is called thus making it Lazy initialization.	
+ BeanFactory interface provides basic features only thus requires less memory. 
+ For standalone applications where the basic features are enough and when memory consumption is critical, we can use BeanFactory.
+ 
+ ApplicationContext
+ It is an advanced container that extends the BeanFactory that provides all basic functionality and adds some advanced features.
+It is suitable to build Web applications, integration with AOP modules, ORM and distributed applications.
+It supports all types of bean scopes such as Singleton, Prototype, Request, Session etc.
+It supports Annotation based configuration in Bean Autowiring.
+ApplicationContext loads all the beans and creates objects at the time of startup only thus making it Eager initialization.
+ApplicationContext provides all the basic features and advanced features, including several that are geared towards enterprise applications thus requires more memory.
+
+Bean Scopes
+Bean Scopes refers to the lifecycle of Bean that means when the object of Bean will be instantiated, how long does that object live, 
+and how many objects will be created for that bean throughout. 
+
+To get all beans managed by spring framework you need to give context.getBeanDefinition() 
+@Primary
+If there are multiple matching beans then the compiler throws an exception as it doesn't know which one to autowire
+So we need to add annotation on one of the bean as primarry so the primary bean will be autowired
+
+@Qualifier is also used for the same purpose but when autowiring we need to give @Qualifier(beanname which is given while giving qualifier annotation on bean)Autowired object
+Maven manages JARs neede by spring
+All the configuration is in pom.xml (spring-boot-starter and spring-boot-starter-test these dependencies are
+added in pom.xml for maven)if we remove these dependencies maven jars will be lost.
+Any maven dependency has a group id or artifactid
+Maven manages dependency updates
+Maven manages all the application dependencies.
+
+maven dependency is a jar that your application need
+
+learn more about maven
+
+Spring dependency injection types
+1.constructor based: Dependencies are set by creating the bean using its constructor
+2.setter based: Dependencuies are set by calling setter methods on your beans
+3.Field based : no setter or constructor. Dependency is injected using reflection
+
+Spring recommends constructor based  injection as dependencies are automatically set when an object is created.
+
+
+Spring Modules
+
+1. Core :IOC Container
+Testing : Mock objects,sPRING mvc tEST -> FOR TESTING
+Data Access : Transactions JDBC,JPA -> to talk too database
+Web servlet : Spring MVC -> to build web application
+Web reactive : Spring Webflux -> to build reactive application
+Integration: JMS -> To interact with other apps
+
+
+Spring projects
+
+Spring boot : It is a popular framework to build REST API Oor a microservice
+Spring cloud : It is used to build cloud native applications
+Spring Data : It is used to integrate the same way with different type of databases
+Spring Integration: Address challenges with integration with other applications
+Spring Security: it is used to secure your web application or REST API or microservice
+
+Filters intercept requests before they reach the DispatcherServlet, making them ideal for coarse-grained tasks such as:
+
+Authentication
+Logging and auditing
+Image and data compression
+Any functionality we want to be decoupled from Spring MVC
+
+HandlerIntercepors, on the other hand, intercepts requests between the DispatcherServlet and our Controllers. This is done within the Spring MVC framework, providing access to the Handler and ModelAndView objects. This reduces duplication and allows for more fine-grained functionality such as:
+
+Handling cross-cutting concerns such as application logging
+Detailed authorization checks
+Manipulating the Spring context or model
+
+
+Controlleradvice is used to handkle exception globally in springboot application.
+
+@Async 
+Normally if we execute a program in java it will be executed synchronously
+For example when you have a application which needs to done many tasks which takes 8 hours of time we will get a response after 8 hours
+So youu can create your own custom thread pool task executorso thst you can delegate the tasks which can run in background to this task.
+But instead of creating this Spring boot creates custom thread pool executor for us when we use @Async annotation.
+
+But You can define the number of core you want to use,your queue capacity, how long your task can be present in your queue, the max pool size
+like this you can customise many things.
+ThreadpoolTaskExecutor -> using this you can set the above things
+corepoolsize
+setQueueCapacity
+setMaxPoolSize
+
+
+@EnableAsync - used to enable asynchronous execution
+When you give thew above annotation springboot searches for class if any @Async is there and then execute that class asynchronously
+
+CompletableFuture
+
+Daemon threads are used to create threads that are running in the background.
+
+
+Spring ComponentS
+Spring Core Container -> Dependency injection and IOC are provided by this.
+ApplicationContext and BeanFactory is used in this
+Spring AOP -> Aspect and advice
+Spring Security  -> SecurityInterceptor
+Spring Boot  -> Auto Configuration , starter dependencies and Spring Boot Actuator
+Spring MVC -> Key components Dispatcher Servlet, Controller and view resolver
+Spring Data  -> REepositories
+Spring Integration  -> Messages
+Spring Cloud
+
+Overall, Spring Boot simplifies and accelerates the development of Java-based applications by providing a powerful and opinionated framework with 
+built-in features, sensible defaults, and seamless integration with the Spring ecosystem.
+
+
+Spring Boot advantages
+Auto-configuration: Spring Boot provides a powerful auto-configuration feature that automatically configures beans based on the dependencies present 
+in the classpath and sensible defaults.
+This eliminates the need for manual configuration and reduces boilerplate code, allowing developers to focus on application logic
+ rather than infrastructure setup.
+2.Embedded Servers: This simplifies deployment and eliminates the need for external servlet containers, making it easier to deploy and run applications
+ in any environment with minimal setup.
+Production-Ready Features:
+Spring Boot Actuator provides production-ready features such as health checks, metrics, monitoring, and management endpoints out of the box.
+These features enable developers to monitor and manage applications in production environments without the need for additional tooling or configurations.
+Simplified Configuration:
+Spring Boot simplifies configuration by providing sensible defaults and externalized configuration options using properties files, YAML files, environment variables, or command-line arguments.
+Developers can easily customize application behavior without modifying code by leveraging externalized configuration.
+Developer Productivity:
+Spring Boot's convention-over-configuration approach and developer-friendly APIs increase developer productivity by reducing the amount of boilerplate code and configuration needed to build applications.
+Rapid application development and seamless integration with popular development tools (e.g., Maven, Gradle, Spring Tool Suite, IntelliJ IDEA) further enhance developer productivity.
+Integration with Spring Ecosystem:
+Spring Boot seamlessly integrates with the broader Spring ecosystem, including Spring Framework, Spring Data, Spring Security, and Spring Cloud.
+Developers can leverage existing Spring expertise, libraries, and community support to build robust and scalable applications using Spring Boot.
+Community Support and Ecosystem:
+Spring Boot has a vibrant and active community of developers, contributors, and users who provide support, share best practices, and contribute to the ecosystem.
+A rich ecosystem of plugins, starters, extensions, and third-party libraries enhances the capabilities of Spring Boot and addresses various use cases and requirements.2
+
+
+
+
+
+

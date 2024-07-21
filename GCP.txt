@@ -1,0 +1,547 @@
+GCP
+
+GCP  has 200+ services
+Createe GCP account in cloud.google.com
+
+
+Each of the popular cloud providers provide millions of servers and they give best available deals from the infrastructure providers
+You don't need to guess the capacity oof your applications anymore. If the load increases we can get new resources 
+You can go global in minutes using cloud
+Setting up database becomes easy using cloud
+You don't need data centers anymore
+
+In GCP each region has atleast 3 zones and the advantage of that is increased availability and fault tolerance within the same region
+In Google's language each zone has one or more discrete cluster/data centers
+Cluster is a distinct physical infrastructure that is houused in a datacenter
+Zones in a region are connedcted through low latency links
+
+To create virtual machines in Google cloud we will use compute engine.
+To create multiple virtual machines we will go with instance groups
+To load balance between them we will go with cloud load balancing.
+
+Google Compute Engine
+Whenver you want to deploy your applications in cloud you need virtual servers and thats what google compute engine enables you to provision in Google cloud.
+Google cloud engine featuures
+create and manage lifecycle of virtual machine instances like start stop or restart yur virtual machine
+Load balancing and auto scaling for multiple VM instances
+ Attach storage (& network storage) to your VM instances
+ Manage network connectivity and configuration for your VM instances. You should assign a IP address to your VM instance and you should use your IP 
+ address to talk to your virtual machine or send a request
+ Our Goal:
+ Setup VM instances as HTTP (Web) Server
+ Distribute load with Load Balancer
+ 
+Go to cloud.google.com and click on  cobsole where we can use all the services
+Search Compute Engine to create a VM instance
+After thst enable it and it will take time to enable
+After that click on create instance and give details like name
+
+We can also add labels like dev or QA 
+We can add hardware to run your virtual machine on 
+There are difference machine families like general purpose compute-optimised and memory-optimised. Based on the requirement of the application we 
+can choose the configuration.
+
+We can also choose which operating system we need to run on our virtual machine. We will have images related to different operating systems
+
+We have something called firewall which suggests which type of traffic to allow. We can select HTTP traffic so someone outside will be able to 
+access HTTP in your application.
+
+After giving all the details click on create to create a VM instance
+
+There will be internal and external IP associated to your Virtual Machine. We can use External IP to connect to your VM through internet.
+We can also SSH to your Virtual Machine so that our virtual machine will be launched
+
+Commands used in SSH
+sudo su
+apt update 
+apt install apache2
+ls /var/www/html
+echo "Hello World!"
+echo "Hello World!" > /var/www/html/index.html
+echo $(hostname)
+echo $(hostname -i)
+echo "Hello World from $(hostname)"
+echo "Hello World from $(hostname) $(hostname -i)"
+echo "Hello world from $(hostname) $(hostname -i)" > /var/www/html/index.html
+sudo service apache2 start
+
+sudo su -> this command is used to make us a root user
+apt is a package manager by default on debian
+apt update will pulll all the latest changes
+
+apt install apache2 -> It will install apache2 in your VM
+After installing the Apache server you can click on the  external link to check  our server and you will be routed to Apache2 Debian as you have selected
+Debian operating system initially.
+
+The default Debian document root is /var/www/html
+We can change it.
+First in ssh give ls /var/www/html then you can find an index.html where we can put our content
+
+echo "Hello World!" > /var/www/html/index.html - We are adding content to index.html file
+After this when we go to the external IP we will get the Hello World instead  of the default page as we have overriden it
+
+echo $(hostname) - this will give us the Hostname of our VM
+
+echo $(hostname -i) - this will give the internal IP address of our VM.
+
+echo "Hello world from $(hostname) $(hostname -i)" > /var/www/html/index.html - this will give the IP address and hostname in the default page where
+we run our VM server i.e., external IP
+
+You will talk to a virtual machine using IP addresses
+
+Internal IP address - Permanent internal IP address that doesnt change during the life time of the instance. It can only be used in the specific network
+where the virtual machine is created.
+External or Ephemeral IP address - if you stop the instance and start again the IP address will be changed. It is  used to talk to the Virtualmachine
+from outside the virtual machine
+Static IP address - The Permanent external IP address that can be attached to a VM. As the external IP address changes constantly we can assign it a 
+static  IP address  so that it will  be constant.
+To configure Static IP address you can go to VPC there will be a option External IP addresses and in that we have option called  promote to static address
+It will promote the already existing external address to Static IP address
+
+Static IP addresses are billed when you are not making use of them. While they are associated to virtual machines you will not pay for them
+If you  dont want to use static IP address you need to release them.
+
+#!/bin/bash
+apt update 
+apt -y install apache2
+echo "Hello world from $(hostname) $(hostname -I)" > /var/www/html/index.html
+
+Instead of doing all the above steps to create a VM instance and setting up a HTTP Apache server we can reduce the number of steps
+
+There are few options to install the server  in less number of steps
+1. Startup Script - We will run the script on the startup of the VM machine to automatically install the Apache server.
+2.Instance Template
+3.Custom Image
+
+1.Startup Script
+The process of installing any OS patches or software when an VM instance is launched is called bootstrapping.
+Whenver you are launching a virtual machine you want to be sure that it is secure.You can make sure its secure by making sure that all the OS patches the
+latest ones are applied.One of the options to do that is to use a option called startup script.
+In VM, you can configure startup script to bootstrapp.
+
+To create a VM with startup script when you try to create a instance you will have a option called Management under which we will have startup script
+In that we need to mention what we need on startup of our application.
+Startup scripts can be used to install software and updates, and to ensure that services are running within the virtual machine
+
+In the startup script we need to mention below commands to install apache server and override the default page of apache with Helloworld from hostname
+#!/bin/bash
+apt update 
+apt -y install apache2  // here y is given as we dont want the VM to ask us a question whether to install the server or not.By default  we are giving 
+as y so question will not be asked
+echo "Hello world from $(hostname) $(hostname -I)" > /var/www/html/index.html
+
+Whenever we need to create a new instance instead of creating instance with akll the details we can create a instance template and ddefine machine
+type,images,labels,startup script and other properties
+With this we can create VM instances and managed instance groups.
+it provides a convenient way to create similar instances
+Instance Template cannot be updated
+
+You can go to Instance Template option and create a instance template and use that template to create a new instance.
+
+Whenever you are trying to install a lot of software at the time of application startup it takes a lot of time to launch that VM instance.
+For that we can create a custom image with OS patches and software pre installed.
+We can create a custom image in a number of ways from an instance or from a persistance disk(whenever you are attaching a harddisk to your instance it
+is a persistance disk) or a snapshot(it is a copy of a persistance disk) or another image or from a file in cloud 
+storage.
+Once you create a custom image it can be shared across projects.
+We can also deprecate old images when no one is using it and specify replacement image
+Whenever you are creating a custom image make sure that all yuor corporate security standards are incorporated into the image.You can create a VM
+instance which have all your security standards and from that you can create Image.This process is called hardening the image.
+Prefer using custom images to startup scripts
+
+Whenever you create a VM the operating system of that VM will run on the hard disk associated to that VM
+To create a image go to the disks associated to your virtual machine under storage and go to actions for that disk and in that you can select create
+an image.
+
+You should never create an image from a disk which is connected to a running instance of your VM.
+
+You can create a VM instance using custom image. 
+Go to create instance template and in the boot disk select oour custom image by clicking on change.
+This will create a VM instance by installing Apache already in it so when we create a VM instance with startup script it will not take much time to 
+startup
+
+service apache2 start-  this command is to start apache server
+
+You need to keep your costs low in the cloud.
+Sustained User discounts
+You will get automatic discounts for running VM instances for significant portion of billing month
+Discount increases with usage
+These discounts are applied whenever you are using Google Kubernetes Engine and Compute Engine and the discount doesnt apply on certain machine types
+It also is not applicable to VMs created by App Engine Flexible and Data flow
+
+Committed User discounts
+It needs a committment from the user to get it
+It is useful for workloads with predictable resource needs.
+You can get upto 70% discounts by telling you need a VM for 1-3 years
+These discounts are applied whenever you are using Google Kubernetes Engine and Compute Engine and the discount doesnt apply on certain machine types
+we cannot cancel committments
+
+Preemptimble VMs
+These are shortlived cheaper compute instances - similar to spot instances in AWS
+can be stopped by GCP any time within 24 hours
+The maximum time for Preemptimble instance is 24 hours
+Instances get 30 second warning before terminating
+
+Use Preemptimble VMs
+if your applications are fault tolerant
+you are very cost sensitive
+your workload is not immediate ex: Non immediate batch processing jobs
+
+These VMs are not always available
+no SLA and cannot be migrated to VM
+you cannot restart them
+Free tier credits are not applicable
+
+You can create a Preemptimble VM by going to availability policy while creating a VM and selecting on for preemtability.
+
+Spot VMs are latest version of preemtabile VMs
+They dont have a maximum runtime like Preemptimble VMs(which have a runtime of 24 hours)
+All the other features of Spot VMs are similar to Preemptimble VM
+
+Sole Tenant Nodes
+Previously the VMs which we created are created on a host computer owned by Google Cloud
+The default tenancy is shared tenancy which means  Single host machine can have instances from multiple customers
+In such situations you go to sole tenant nodes
+Sole-tenant Nodes: Virtualized instances on hardware dedicated to one customer
+To create it you can go to Compute Engine in that we will have Sole-tenant nodes to create a sole tenant node
+In that we need to create a node template 
+Whenever you create a new VM instance and you want it to be deployed to this specific node group then you need to assign it with a right affinity labels
+We can specify number of nodes we need and select autoscaling if required
+
+After creating it we need to go to create VM instances and in that we havve a option called sole tenancy in that we have a option called node affinity
+label in that we need to give the affinity label which we used previously to create a node in the format of key:operator:value
+
+Use cases:
+ Security and compliance requirements: You want your VMs to be physically separated from those in other projects
+ High performance requirements: Group your VMs together
+ Licensing requirements: Using per-core or per-processor "Bring your own licenses".If you are making use of sole tenant nodes you can bring your own
+Windows server license and make use of it in google cloud.
+
+Google cloud pricing calculator
+It will estimate the prices for the workload which you are running on google cloud 
+
+ Compute Engine Features: Custom Machine Types
+ What do you do when predefined VM options are NOT appropriatefor your workload?
+ Create a machine type customized to your needs (a Custom Machine Type)
+ Custom Machine Type: Adjust vCPUs, memory and GPUs
+ Choose between E2, N2, or N1 machine types
+ Supports a wide variety of Operating Systems: CentOS, CoreOS, Debian, Red Hat,Ubuntu, Windows etc
+ Billed per vCPUs, memory provisioned to each instance
+ Example Hourly Price: $0.033174 / vCPU + $0.004446 / GB
+ 
+ To configure it for the VM you can go to Machine family and under that in machine type you can choose custom machine type.
+ 
+ Google Compute Engine - VM Costs - The costs to run your VM
+ 2 primary costs in running VMs using GCE:
+ 1: Infrastructure cost to run your VMs
+ 2: Licensing cost for your OS (ONLY for Premium Images)
+ Premium Image Examples: Red Hat Enterprise Linux (RHEL), SUSE Linux Enterprise
+ Server (SLES), Ubuntu Pro, Windows Server, ..
+ Options For Licensing:
+ 1:You can use Pay-as-you-go model (PAYG) OR
+ 2: (WITHIN A LOT OF CONSTRAINTS) You can use your existing license/subscription (Bring your own
+ subscription/license - BYOS/BYOL)
+ (RECOMMENDED) If you have existing license for a premium
+ image, use it while your license is valid
+ After  that you can shi to Pay-as-you-go model (PAYG)
+ 
+  Scenario
+ Service
+ I want to ensure my VM runs a specific operating system and soware stack for my application - Custom Image
+ I need to optimize my VM for a specialized workload requiring a unique mix of CPU,memory, and storage -Custom Machine Types
+ My application requires a fixed IP address that doesn't change between reboots or reassignments - Static IP Addresses
+  I have predictable resource needs and want to commit to a 1 or 3-year plan to enjoydeeper discounts - Committed Use Discounts
+ I need to run short-lived, fault-tolerant workloads that can tolerate interruptions in exchange for lower costs - Preemptible VM
+ 
+Instance Groups
+ Instance Groups
+ How do you create a group of VM instances?
+ Instance Group - Group of VM instances managed as a single entity
+ Manage group of similar VMs having similar lifecycle as ONE UNIT
+ Two Types of Instance Groups:
+ Managed(MIG) : Identical VMs created using a template:
+ Features: Auto scaling, auto healing and managed releases
+ Unmanaged : Different configuration for VMs in same group:
+ Does NOT offer auto scaling, auto healing & other services
+ NOT Recommended unless you need different kinds of VMs
+ Location can be Zonal or Regional
+ Regional gives you higher availability (RECOMMENDED
+ 
+Managed Instance Groups (MIG)
+ Managed Instance Groups (MIG)
+ Managed Instance Group - Identical VMs created
+ using an instance template
+ Important Features:
+ Maintain certain number of instances
+ If an instance crashes, MIG launches another instance
+ Detect application failures using health checks (Self Healing)
+ Increase and decrease instances based on load (Auto Scaling)
+ Add Load Balancer to distribute load
+ Create instances in multiple zones (regional MIGs)
+ Regional MIGs provide higher availability compared to zonal MIGs
+ Release new application versions without downtime
+ Rolling updates: Release new version step by step (gradually). Update a
+ percentage of instances to the new version at a time.
+ Canary Deployment: Test new version with a group of instances before
+ releasing it across all instances
+ 
+Creating Managed Instance Group (MIG)
+Below things are required to create a MIG
+ Instance template is mandatory
+ Configure auto-scaling to automatically adjust number of instances based on load:
+ Minimum number of instances
+ Maximum number of instances
+ Autoscaling metrics: CPU Utilization target or Load Balancer Utilization target or Any other metric from Stack  - this means how you want to do your auto-scaling
+ Cool-down period: How long to wait before looking at auto scaling metrics again? -for example if you increase your number of instance by 3 you need to
+ wait sometime before again checking at the metrics again
+ Scale In Controls: Prevent a sudden drop in no of VM instances
+ Example: Don't scale in by more than 10% or 3 instances in 5 minutes
+ Autohealing: Configure a Health check with Initial delay (How long should you wait for your app to initialize before running a health check?)
+ The aboive one means replace unhealthy instances with ealthy instances
+ 
+ We will have a option to create a instance group in that we can create managed instance or unmanaged instance
+ In managed we have 2 types stateless and stateful.If you are creating a database then that is a stateful workload.
+ We will run web applications or REST APIs which doesnt have any state using stateless managed instance
+Yoiu can select options to scale like if you want to add or remove auto scaling group
+You can select ewhen the instance can auto scale by defining the auto scaling metrics. It will tell the server at what time the auto scaling is required
+We can select different mmetrics like CPU utilisation,HTTP load balancing utilisation,Cloud monitoring metric
+
+You can also autoscale based on the schedule.
+You can also configure a cool down period i.e., when we can autoscale after looking at the metrics.
+you can also configure scale in instances 
+Scale in means reducing the number of instances in a specified time and scale out means increasing number of instances in a specified time
+you shouldn't scale in or scale out suddenly. It should be a step by step process
+
+Autohealing. We can configure a health check to specify if your VM is healthy or not
+We can configure the time when we want to do health checks periodically
+We can configure the timeout also i.e., how long to wait before the request is considered a failure.
+You can also configure healthy threshold which is how many success calls you can consider to mark your VM instance as healthy and unhealthy threshold
+to mark the VM as unhealthy
+You can configure initial delay
+
+
+GCP - Cloud Load Balancing
+ GCP - Cloud Load Balancing
+ Distribute traffic across VM instances in one or more
+ regions
+ Managed service:
+ Google Cloud ensures that it is highly available
+ Auto scales to handle huge loads
+ Load Balancers can be public or private
+ Types:
+ External HTTP(S)
+ Internal HTTP(S)
+ SSL Proxy
+ TCP Proxy
+ External Network TCP/UDP
+ Internal TCP/UDP
+ 
+You can create load balancer by searching load balancing 
+We have different type of load balancing such as HTTP,TCP and UDP load balancing
+
+You can create a internet load balancing or a internal 
+UDP load balancer can only be in single region
+Normally gaming applications need high performance thats when yoiu go for Layer 4 load balancing and UDP and TCP are layer 4 load balancers
+HTTP is layer 7 load balancing and it is used for REST APIs web applications
+you can create it in multiple regions
+
+Inside the load balancer we need to configure below 3 things
+What is the backend configurartion -> it is where we need to redirect our incomming traffic. It is our instance
+what is the frontend configurartion -> how can we redirect traffic to the backend
+what are the path rulesn -> where we receive the traffic. Frontend provides you a url for the load balancer
+
+AAS (Infrastructure as a Service)
+ IAAS (Infrastructure as a Service)
+ Use only infrastructure from cloud provider
+ Example: Using VM to deploy your applications or databases
+ You are responsible for:
+ Application Code and Runtime
+ Configuring load balancing
+ Auto scaling
+ OS upgrades and patches
+ Availability
+ etc.. ( and a lot of things!)
+ 
+ PAAS (Platform as a Service)
+ PAAS (Platform as a Service)
+ Use a platform provided by cloud
+ Cloud provider is responsible for:
+ OS (incl. upgrades and patches)
+ Application Runtime
+ Auto scaling, Availability & Load balancing etc..
+ You are responsible for:
+ Configuration (of Application and Services)
+ Application code (if needed)
+ Varieties:
+ CAAS (Container as a Service): Containers instead of Apps
+ FAAS (Function as a Service): Functions instead of Apps
+ Databases - Relational & NoSQL (Amazon RDS, Google CloudSQL, Azure SQL Database etc), Queues, AI, ML, Operations etc
+ 
+  Enterprises are heading towards microservices architectures
+ Build small focused microservices
+ Flexibility to innovate and build applications in different programming languages (Go, Java,Python, JavaScript, etc)
+ BUT deployments become complex!
+ How can we have one way of deploying Go, Java, Python or JavaScript ..
+ microservices?
+ Enter containers
+ 
+ Docker is one of the popular container tool
+Create Docker images for each microservice
+ Docker image has all needs of a microservice:
+ Application Runtime (JDK or Python or NodeJS)
+ Application code and Dependencies
+ Runs the same way on any infrastructure:
+ Your local machine
+ Corporate data center
+ Cloud
+ Advantages
+ Docker containers are light weight
+ Compared to Virtual Machines as they do not have a Guest OS
+ Docker provides isolation for containers
+ Docker is cloud neutral
+ 
+Container Orchestration tool would manage the deployment of our microservices into clusters. Each of these cluster have multiple servers
+
+Container Orchestration
+ Container Orchestration
+ Requirement : I want 10 instances of Microservice A container, 15 instances of Microservice B container and ....
+ Typical Features:
+ Auto Scaling - Scale containers based on demand
+ Service Discovery - Help microservices find one another
+ Load Balancer - Distribute load among multiple instances of a microservice
+ Self Healing - Do health checks and replace failing instances
+ Zero Downtime Deployments - Release new versions without downtime
+ 
+Kubernetes is one of the popular cloud orchestration tools
+GKE is google kubernetes Engine which is the kubernetes service provided by google
+There are other services around containers which cloud provides
+Google provides cloud run which is the service to run simple containers
+
+Serverless
+ Serverless
+ What do we think about when we develop an application?
+ Where to deploy? What kind of server? What OS?
+ How do we take care of scaling and availability of the application?
+ What if you don't need to worry about servers and focus on your code?
+ Enter Serverless
+ Remember: Serverless does NOT mean "No Servers"
+ Serverless for me:
+ You don't worry about infrastructure (ZERO visibility into infrastructure)
+ Flexible scaling and automated high availability
+ Most Important: Pay for use
+ Ideally ZERO REQUESTS => ZERO COST
+ You focus on code and the cloud managed service takes care of all that is
+ needed to scale your code to serve millions of requests!
+ And you pay for requests and NOT servers
+ 
+ Google Functions in GCP is the serverless service provided by GCP
+ 
+ SaaS (Soware as a Service)
+ SaaS (Soware as a Service)
+ Centrally hosted soware (mostly on the cloud)
+ Offered on a subscription basis (pay-as-you-go)
+ Examples:
+ Email, calendaring & office tools (such as Outlook 365, Microso Office 365, Gmail, Google Docs)
+ Cloud provider is responsible for:
+ OS (incl. upgrades and patches)
+ Application Runtime
+ Auto scaling, Availability & Load balancing etc..
+ Application code and/or
+ Application Configuration (How much memory? How many instances? ..)
+ Customer is responsible for:
+ Configuring the soware!
+ And the content (example: docs, sheets etc
+
+ Shared Responsibility Model
+ Security in cloud is a Shared Responsibility:
+ Between GCP and the Customer
+ GCP provides features to make security easy:
+ Encryption at rest by default
+ IAM
+ KMS etc
+ Customer responsibilities vary with the
+ model:
+ SaaS: Content + Access Policies + Usage
+ PaaS: SaaS + Deployment + Web Application Security
+ IaaS: PaaS + Operations + Network Security + Guest OS
+ Google Cloud is always responsible for
+ Hardware, Network, Audit Logging etc.
+ 
+ GCP Managed Services for Compute
+ Compute Engine - High-performance and general purpose VMs that scale globally -IaaS
+ GoogleKubernetesEnginE -  Orchestrate containerized microservices on Kubernetes.Needs advanced cluster configuration and monitoring - CaaS
+ App Engine - Build highly scalable applications on a fully managed platform using open and familiar languages and tools - PaaS (CaaS,Serverless)
+ Cloud Functions -Build event driven applications using simple, single purpose functions - FaaS, Serverless
+ Cloud Run - Develop and deploy highly scalable containerized applications.Does NOT need a cluster! - CaaS (Serverless
+ 
+Google App Engine
+ Simplest way to deploy and scale your applications in GCP
+ Provides end-to-end application management
+ Supports:
+ Go, Java, .NET, Node.js, PHP, Python, Ruby using pre-configured runtimes
+ Use custom run-time and write code in any language
+ Connect to variety of Google Cloud storage products (Cloud SQL etc)
+ No usage charges - Pay for resources provisioned
+ Features:
+ Automatic load balancing & Auto scaling
+ Managed platform updates & Application health monitoring
+ Application versioning
+ Traffic splitting
+ 
+ Compute Engine vs App Engine
+ Compute Engine
+ IAAS
+ MORE Flexibility
+ MORE Responsibility
+ Choosing Image
+ Installing Soware
+ Choosing Hardware
+ Fine grained Access/Permissions (Certificates/Firewalls)
+ Availability etc
+ 
+ App Engine
+ PaaS
+ Serverless
+ LESSER Responsibility
+ LOWER Flexibility
+ 
+ pp Engine environments
+ App Engine environments
+ Standard: Applications run in language specific sandboxes
+ V1: Java, Python, PHP, Go (OLD Versions)
+ V2: Java, Python, PHP, Node.js, Ruby, Go (NEWER Versions)
+ Complete isolation from OS/Disk
+ Supports scale down to Zero instances
+ 
+ Flexible - Application instances run within Docker containers
+ Makes use of Compute Engine virtual machines
+ Support ANY runtime (with built-in support for Python, Java, Node.js, Go,
+ Ruby, PHP, or .NET)
+ CANNOT scale down to Zero instances
+ 
+Whenever you want to make use of any service within a new project the first thing that you need to do is enable the APIs for that specific service
+Whenever you are using a App engine the first thing that you need to choose is which region you would want to deploy your application in.
+
+We can deploy the service to APP engine using Google cloud shell
+
+Enable App Engine API for the project 
+
+You can have only one region for one project
+
+In cloud shell editor we have a code editor and we wilkl also have a terminal where we can write our code
+If we selected python when creating app engine we can write python code
+We need to have the configurations related to app engine in app.yaml file like which runtime we need to use
+After going to the folder where our code is present we need to set the project using below command
+gcloud config set project "projectid to which we want to deploy"
+After setting the project we need to give gcloud app deploy so our code will be deployed to the cloud
+
+When we try to deploy we will get error as access denied as there is no permissions to storage object viewer
+So we need to go to IAM and provide permissions for storage access viewer role
+
+Whenever we deploy something to App engine package an deployment package is created and the deployment package is told to an object storage service
+which is present in Google Cloud which is called Google Cloud Storage
+Package is created using a CI/CD tool whihc is present in Google cloud called Cloud build
+Cloud build needs to access the package which is uploaded to Google Cloud storage
+The error we got is the cloud build was not able to access the package which is present in Google cloud storage
+We give permission to cloud build is by giving access to something called a cloud build service account.
+In that we will have a url where we can acccess our application 

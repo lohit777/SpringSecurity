@@ -1,0 +1,291 @@
+# Online Python compiler (interpreter) to run Python online.
+# Write Python 3 code in this online editor and run it.
+class Node():
+    def __init__(self,val):
+        self.val = val                                   # Value of Node
+        self.parent = None                               # Parent of Node
+        self.left = None                                 # Left Child of Node
+        self.right = None                                # Right Child of Node
+        self.color = 1                                   # Red Node as new node is always inserted as Red Node
+
+# Define R-B Tree
+class RBTree():
+    def __init__(self):
+        self.NULL = Node ( 0 )
+        self.NULL.color = 0
+        self.NULL.left = None
+        self.NULL.right = None
+        self.root = self.NULL
+
+
+    # Insert New Node
+    def insertNode(self, key):
+        node = Node(key)
+        node.parent = None
+        node.val = key
+        node.left = self.NULL
+        node.right = self.NULL
+        node.color = 1                                   # Set root colour as Red
+
+        i = None
+        j = self.root
+
+        while j != self.NULL :                           # Find position for new node
+            i = j
+            if node.val < j.val :
+                j= j.left
+            else :
+                j = j.right
+
+        node.parent = i                                  # Set parent of Node as i
+        if i == None :                                   # If parent i.e, is none then it is root node
+            self.root = node
+        elif node.val < i.val :                          # Check if it is right Node or Left Node by checking the value
+            i.left = node
+        else :
+            i.right = node
+
+        if node.parent == None :                         # Root node is always Black
+            node.color = 0
+            return
+
+        if node.parent.parent == None :                  # If parent of node is Root Node
+            return
+
+        self.fixInsert ( node )                          # Else call for Fix Up
+
+
+    def minimum(self, node):
+        while node.left != self.NULL:
+            node = node.left
+        return node
+
+
+    # Code for left rotate
+    def LR ( self , j ) :
+        i = j.right                                      # i = Right child of j
+        j.right = i.left                                 # Change right child of j to left child of i
+        if i.left != self.NULL :
+            i.left.parent = j
+
+        i.parent = j.parent                              # Change parent of i as parent of j
+        if j.parent == None :                            # If parent of j == None ie. root node
+            self.root = i                                # Set i as root
+        elif j == j.parent.left :
+            j.parent.left = i
+        else :
+            j.parent.right = i
+        i.left = j
+        j.parent = i
+
+
+    # Code for right rotate
+    def RR ( self , j ) :
+        i = j.left                                       # i = Left child of j
+        j.left = i.right                                 # Change left child of j to right child of i
+        if i.right != self.NULL :
+            i.right.parent = j
+
+        i.parent = j.parent                              # Change parent of i as parent of j
+        if j.parent == None :                            # If j is root node
+            self.root = i                                # Set i as root
+        elif j == j.parent.right :
+            j.parent.right = i
+        else :
+            j.parent.left = i
+        i.right = j
+        j.parent = i
+
+
+    # Fix Up Insertion
+    def fixInsert(self, l):
+        while l.parent.color == 1:                        # While parent is red
+            if l.parent == l.parent.parent.right:         # if parent is right child of its parent
+                n = l.parent.parent.left                  # Left child of grandparent
+                if n.color == 1:                          # if color of left child of grandparent i.e, uncle node is red
+                    n.color = 0                           # Set both children of grandparent node as black
+                    l.parent.color = 0
+                    l.parent.parent.color = 1             # Set grandparent node as Red
+                    l = l.parent.parent                   # Repeat the algo with Parent node to check conflicts
+                else:
+                    if l == l.parent.left:                # If l is left child of it's parent
+                        l = l.parent
+                        self.RR(l)                        # Call for right rotation
+                    l.parent.color = 0
+                    l.parent.parent.color = 1
+                    self.LR(l.parent.parent)
+            else:                                         # if parent is left child of its parent
+                n = l.parent.parent.right                 # Right child of grandparent
+                if n.color == 1:                          # if color of right child of grandparent i.e, uncle node is red
+                    n.color = 0                           # Set color of childs as black
+                    l.parent.color = 0
+                    l.parent.parent.color = 1             # set color of grandparent as Red
+                    l = l.parent.parent                   # Repeat algo on grandparent to remove conflicts
+                else:
+                    if l == l.parent.right:               # if l is right child of its parent
+                        l = l.parent
+                        self.LR(l)                        # Call left rotate on parent of l
+                    l.parent.color = 0
+                    l.parent.parent.color = 1
+                    self.RR(l.parent.parent)              # Call right rotate on grandparent
+            if l == self.root:                            # If l reaches root then break
+                break
+        self.root.color = 0                               # Set color of root as black
+
+
+    # Function to fix issues after deletion
+    def fixDelete ( self , j ) :
+        while j != self.root and j.color == 0 :           # Repeat until j reaches nodes and color of j is black
+            if  j== j.parent.left :                       # If j is left child of its parent
+                t = j.parent.right                        # Sibling of j
+                if j.color == 1 :                         # if sibling is red
+                    t.color = 0                           # Set its color to black
+                    j.parent.color = 1                    # Make its parent red
+                    self.LR ( j.parent )                  # Call for left rotate on parent of j
+                    t = j.parent.right
+                # If both the child are black
+                if t.left.color == 0 and t.right.color == 0 :
+                    t.color = 1                           # Set color of t as red
+                    j = j.parent
+                else :
+                    if t.right.color == 0 :               # If right child of t is black
+                        t.left.color = 0                  # set left child of t as black
+                        t.color = 1                       # set color of t as red
+                        self.RR ( t )                     # call right rotation on j
+                        t = j.parent.right
+
+                    t.color = j.parent.color
+                    j.parent.color = 0                    # Set parent of j as black
+                    t.right.color = 0
+                    self.LR ( j.parent )                  # call left rotation on parent of j
+                    j = self.root
+            else :                                        # If  j is right child of its parent
+                t = j.parent.left                         # Sibling of j
+                if t.color == 1 :                         # if sibling is red
+                    t.color = 0                           # Set its color to black
+                    j.parent.color = 1                    # Make its parent red
+                    self.RR ( j.parent )                  # Call for right rotate on parent of j
+                    t = j.parent.left
+
+                if t.right.color == 0 and t.right.color == 0 :
+                    t.color = 1
+                    j = j.parent
+                else :
+                    if t.left.color == 0 :                # If left child of t is black
+                        t.right.color = 0                 # set right child of t as black
+                        t.color = 1
+                        self.LR ( t )                     # call left rotation on x
+                        t = j.parent.left
+
+                    t.color = j.parent.color
+                    j.parent.color = 0
+                    t.left.color = 0
+                    self.RR ( j.parent )
+                    j = self.root
+        j.color = 0
+
+
+    # Function to transplant nodes
+    def __rb_transplant ( self , n , o ) :
+        if n.parent == None :
+            self.root = o
+        elif n == n.parent.left :
+            n.parent.left = o
+        else :
+            n.parent.right = o
+        o.parent = n.parent
+
+
+    # Function to handle deletion
+    def delete_node_helper ( self , node , key ) :
+        m = self.NULL
+        while node != self.NULL :                          # Search for the node having that value/ key and store it in 'm'
+            if node.val == key :
+                m = node
+
+            if node.val <= key :
+                node = node.right
+            else :
+                node = node.left
+
+        if m == self.NULL :                                # If Kwy is not present then deletion not possible so return
+            print ( "Value not present in Tree !!" )
+            return
+
+        i = m
+        i_original_color = i.color                          # Store the color of m- node
+        if m.left == self.NULL :                            # If left child of m is NULL
+            j = m.right                                     # Assign right child of m to j
+            self.__rb_transplant ( m , m.right )            # Transplant Node to be deleted with j
+        elif (m.right == self.NULL) :                       # If right child of m is NULL
+            j = m.left                                      # Assign left child of m to x
+            self.__rb_transplant ( m , m.left )             # Transplant Node to be deleted with j
+        else :                                              # If m has both the child nodes
+            i = self.minimum ( m.right )                    # Find minimum of the right sub tree
+            i_original_color = i.color                      # Store color of y
+            j = i.right
+            if i.parent == m :                              # If i is child of m
+                j.parent = i                                # Set parent of j as i
+            else :
+                self.__rb_transplant ( i , i.right )
+                i.right = m.right
+                i.right.parent = i
+
+            self.__rb_transplant ( m , i )
+            i.left = m.left
+            i.left.parent = i
+            i.color = m.color
+        if i_original_color == 0 :                          # If color is black then fixing is needed
+            self.fixDelete ( j )
+
+
+    # Deletion of node
+    def delete_node ( self , val ) :
+        self.delete_node_helper ( self.root , val )         # Call for deletion
+
+
+    # Function to print
+    def __printCall ( self , node , indent , last ) :
+        if node != self.NULL :
+            print(indent, end=' ')
+            if last :
+                print ("R----",end= ' ')
+                indent += "     "
+            else :
+                print("L----",end=' ')
+                indent += "|    "
+
+            s_color = "RED" if node.color == 1 else "BLACK"
+            print ( str ( node.val ) + "(" + s_color + ")" )
+            self.__printCall ( node.left , indent , False )
+            self.__printCall ( node.right , indent , True )
+
+    # Function to call print
+    def print_tree ( self ) :
+        self.__printCall ( self.root , "" , True )
+
+
+if __name__ == "__main__":
+    bst = RBTree()
+
+    bst.insertNode(9)
+    bst.insertNode(1)
+    bst.insertNode(12)
+    bst.insertNode(0)
+    bst.insertNode(4)
+    bst.insertNode(11)
+    bst.insertNode(18)
+    bst.insertNode(2)
+    bst.insertNode(7)
+    bst.insertNode(14)
+    bst.insertNode(19)
+    bst.insertNode(5)
+    bst.insertNode(13)
+    bst.insertNode(15)
+    bst.insertNode(16)
+
+    bst.print_tree()
+
+    print("\nAfter deleting an element")
+    bst.delete_node(1)
+    bst.print_tree()

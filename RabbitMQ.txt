@@ -1,0 +1,66 @@
+RabbitMQ
+Advanced Message Queuing Protocol
+
+Message Queuing allows applications to communicate by sending messsages  to each other. The messsage queue provides a temporary  messsage storage
+when the destination program is busy or not connected.
+
+A messsage queue is made up of a producer,a broker(the messsage queue software) and a consumer.
+A messsage queue provides asynchronous communicattion between applications.
+
+A RabbitMQ is a messsage queue software(messsage broker/queue manager) that acts an intermediate platform where different application can send and receive
+messages.
+RabbitMQ originally implements Advanced Message Queuing Protocol but now it also suppoorts API protocols like HTTP.
+
+RabbitMQ is one of the simplest freely available options for implementing messaging queues in your microservices architecture
+Producer is an applcication that sends messages to the RabbitMQ broker.
+Consumer is an applcication that reads messages from the RabbitMQ broker
+
+Queue is a buffer or storage in a RabbitMQ broker to store the messages.
+
+Exchange acts as a intermediate  between Queue and producer. Exchage gets the message and transfers it to the Queue.It will perform a set of rules
+before sending the message.
+Routing key is the key that the exchange looks at to decide how to route the messages to queues.The routing is like an address for the message.
+
+Binding is a link between exchange and queue. Binding is done using Routing
+15672 - Port for rabbitmq management website
+
+RabbitMQ Management
+Once you install RabbitMQ and go to port 15672 you will be able to see login page and once you login with guest credentials you will be able to see 
+RabbitMQ Management UI.
+In this you can create a queue you can bind queue and exchange using Routing key
+The producer and consumer basically exchange a message over a channel. Whenever you establsih a communication between producer and consumer we can see in 
+producers tab.
+We can add exchanges using exchange tab.
+You can add a queue using add queue.
+After adding we need to bind queue to the exchange by clicking on the exchange which we have created
+We need to give the queue name to which we need to bind our exchange and give a routing key
+
+We can send the messages using publish messages option inside the Exchange and give the routiing key inside it
+Inside the payload we need to pass the message.
+
+Spring uses AMQP protocol. It supports RabbitMQ
+Spring for RabbitMQ - add this dependendency
+
+cong=figure below in application.properties these will autoconfigured no need to add these properties
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+
+@Vlue annotation is useds to read the value from application.properties
+
+ConnectionFactory,RabbitTemplate and RabbitAdmin beans will be auto configured by spring boot
+We need to create beans for Exchange, Queue and binding. See code in mobile
+
+RabbitTemplate can be used to send the messages
+
+rabbitTemplate.convertAndSend(exchange value,routingkeyvalue,object which we need to send) -> in this way we need to send messages using rabbitmq
+We are sending the object to the exchange and then exchange will use the routingkey to route the message to the queue
+
+You can give @RabbitListener annotation on top of the method for which you want to consume the resources.
+
+To produce and consume a message in JSON format we can create a bean which returns messageconverter and return Jackson2JsonMessageConverter();
+RabbitTemplate implements AMQPTemplate 
+After writing thwe bean we need to set the message converter of this bean to the rabbitTemplate
+
+rabbitmq-plugins.bat enable rabbitmq_management

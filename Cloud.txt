@@ -1,0 +1,312 @@
+Cloud
+With the cloud we don't buy resources but we rent resources
+We use resources when there is a high load and release them when there is a decrease in load.
+Thuis is called on demand resource provisioning
+
+You rent resources based on demand of your applications
+
+Each of the popular cloud providers provide millions of servers and they give best available deals from the infrastructure providers
+You don't need to guess the capacity oof your applications anymore. If the load increases we can get new resources 
+You can go global in minutes using cloud
+Setting up database becomes easy using cloud
+You don't need data centers anymore
+
+AWS
+It is the leading cloud service providers
+It provides most(200+) services
+It is reliable cost effective and secure
+
+Create a free tier AWS account
+Use Root user and password credentials to signup for AWShaaaa
+Don't use Root user and password for day to day activities
+
+IAM&Best practices
+IAM : Identity and Access Management
+IAM checks whether the loggedin user is the right user or not and does he have proper authorisation
+Instead of root  user  for day to day activities create another IAM user and use it for day to day activities
+
+You can create IAM Users/groups and manage permissions to them
+
+IAM User password :7qP4v#%}
+
+https://339712844819.signin.aws.amazon.com/console  - URL for IAM user
+
+Initially you need yto create AWS account and those credentials will be your root username and password.
+But its not recommended to use root username and password for AWS account
+So we need to create IAM user for our day to day activities
+You need to go to Amazon management console and search for IAM and create a group with required privileges and add users to that group
+
+You can deploy your applications in different parts of your world in minutes using regions and zones
+
+Consider an examople
+You deployed your application in a datacenter in London
+1. When users from different parts of the world tries to access the application it will give slow access for users(high latency)
+2. If the data center crashes your application goes down so that others can't use the application anymore as it is crashed
+
+So you can setup multiple datacenters in multiple regions so that the latency will improve as well as if a datacenter is down we can use other datacenter
+
+It is really difficult to setup datacenters all around the world as the infrastructure cost will be more
+
+So cloud providers like AWS provides 25 regions acrosee the world and there are new regions added in every year.
+
+A region is a geographic location where we can host our resources
+
+By having different locations AWS makes it really easy to deploy our applications
+
+Multiple regions advantages
+High availability  -> Even if one region goes down yoou can use other regions
+Low latency  -> you can serve your user from nearest region to them
+Global footprint -> You can deploy your applications to any part of your world
+Adherence to government regulations
+
+Availability zones
+AWS provides multiple availability zones in each of the regions
+Each availability zone is a set of one or more data centers
+Each availability zone has independent and redundant power,networking and connectivity
+All Availabilityzones in a region are connected through low latency links
+So there will be a very fast communication with the applicaitons deployed in same availability zone
+
+Advantage is that increase availability and fault tolerance in same region.
+
+EC2(Elastic Compute cloud) Fundamentales
+In  corporate data centers applications are deployed to physical servers
+In cloud we will rent something called virtual machines
+In AWS Virtual machines are called EC2 Instances
+If you want to create a virtual machine in AWS we will create a EC2 instance
+EC2 Servcie helps us in creating EC2 instances/VMs
+
+Features of EC2
+Create and manage lifecycle of EC2 instances
+You can also attach storage to EC2 instance
+You can make use of something called Amazon EBS(Elastic Block Store) to attach database to EC2instance
+You can make use of EC2 to create Elastic Block Store Instances and attach them to your EC2instance
+You can also do load balancinbg for multiple EC2 instances
+
+
+To create EC2 Instance after logging in to Amazon management console search for EC2 and click on EC2 Instance and fill all the details
+
+Application Machine Image(AMI)
+An AMI is a template that contains the software configuration (operating system, application server, and applications)
+ required to launch your instance. Search or Browse for AMIs if you don’t see what you are looking for below
+ 
+ AMI is all about your Software and Instance type is all about your hardware
+ Each instance will have different amount of memory different VCPUS 
+ 
+ You need to create a key pair to securely connect to EC2
+ 
+ Under Security group you can confugure what security is coming to your instance and what traffic is going out of your instance
+ 
+ After creating a EC2 instance you can connect tto it by selecting it and clicking on connect
+ There vwill be multiple approaches to connecrrt to your EC2 instance.
+ We will use EC2 instance connect to connect to EC2 instance.
+
+Once connected it will open a console window where we can type commands
+you can innstall any software in this EC2 instance like python node.js java
+
+You ewill have a Public IP address for a EC2 Instance and if you want to install a application in EC2 instance you can use this public ip address
+to access that specific application
+
+You can stop/Reboot or terminate the instance.
+Stopping will stop the instance temporarily later you can start it again.
+Terminating will terminate it entirely the instance will be deleted.
+
+You can click on the instance and you will get the details regarding that particular instance
+We can also monitor metrics of your EC2 instance by goign to Monitoring and also security by going to security tab for that particular instance.
+
+In AWS the service which tracks your metrics is Cloudwatch.
+
+You can also tags in tags tab
+
+sudo su
+yum update -y
+yum install httpd
+ systemctl start httpd - to start the server that is installed
+ 
+ Once the server is started we can access it using the public ip address. Wwe just need to give the public IP address in a new window.
+But before that we need to configure security groups. By default we are allowing requests only from SSH and not HTTP 
+
+If you connect to a instnace and if you want to become a super user for that instance you can give sudo su command after connecting to the instance
+After becoming a super user you can install any software you want on EC2 instance.
+
+To install sofware in any of the OS we use package manageers.
+In Amazon Linux 2 we use yum package manager 
+yum update -y -> it is used to update package manager
+To install a web server the command is yum install httpd. It will install a apache server
+ systemctl start httpd - to start the server that is installed
+ 
+ Once the server is started we can access it using the public ip address. Wwe just need to give the public IP address in a new window.
+But before that we need to configure security groups. By default we are allowing requests only from SSH and not HTTP 
+We need to allow requests even from http yto access the server
+To change the security we need to go to security groups which is configured earlier and add a inbound rule http to allow access from everywhere.
+
+Important EC2 Concepts
+Amazon Machine Image - > Which OS and which software do you want on EC2 instance. Thats what AMI represents. It provides a starting point for your 
+OS and you can also customize what software uyou want
+AWS provides lot of pre-built AMIs
+Instance Families -> Helps you to choose the right family of hardware(General purpose or Compute/Storage/Memory Optimized or CPU)
+Instance sizes -> Choose the right quantity of hardware(ex -2 vCPUS, 4GB of memory)
+Elastic Block Store -> Helps you to attach Disks to EC2 instances(Block Storage)
+Security group -> Virtual firewall to control incoming and outgoing traffic to/from AWS resources(EC2 instances, databases)
+Key Pair -> Key pair consists of a public and private key. Public key is directly stored in EC2 Instance. Private key is stored by customer
+If you want to connect to EC2 instance you need private key.
+
+
+IaaS(Infrastructure as a Service) -> It is only about using infrastructure from the cloud provider
+Ex:  you will use VMs provided by cloud to deploy your applications/databases
+When you use IaaS cloud provider is responsible for hardware networking and virtuallisation(If youy are using AWS you can make use of EC2 instance to create virtual machines)
+you are responsible for everything else
+For ex: you want to run a python aplication on a Linux OS. You will be responsible for installing Linux, python application and also responsible
+for any linux updates
+We will also be responsible for application and runtime
+You are also responsible for load balancing
+You are also responsible for auto scaling
+You are also responsible for availabilty
+
+The alternative to IaaS is PaaS. Use a platform which is provided by Clou d
+PaaS(Platform as a Service) -> Cloud provider is responsible for hardware networking and virtuallisation,application and runtime,load balancing
+,auto scaling and availability
+You are only responsible for Configuration of application and services and Application code
+You just need to focus on code of your application
+
+Ex: 
+Compute options : These are the options that helps us to run Python,Java,node.js applications in cloud
+AWS Beanstalk is a example of PaaS.Azure App service is Microsoft cloud provider which is an example of PaaS
+Google App Engine is provided by Google
+You also have plenty of relational and NoSQL databases as well. Amazon RDS is an example of relational transactional database.
+
+AWS Elastic Beanstalk -> simplest way to deploy and scale your web applications in AWS.
+It supports end to end applicaitons management.
+It supports java,.NET,Python , Docker applications
+
+Features
+Automatic load balancing : if you have multiple EC2 instances AWS elastic beanstalk will do load balancing
+Auto Scaling : 
+It can also perform managed platform updates. If  there is OS update it will be done by beanstalk
+
+Auto Scaling group and Elastic load balancing
+If there are a millions of users you need to create multiple ECS instances. AWS have Auto Scaling Groups which simplifies the creation of .multiple
+EC2 instances
+Auto Scaling groups allow you to create and manage a group of EC2 instances
+Auto Scaling group increases or decreases the instances based on the load that is coming in
+
+Once we have multiple EC2 instances Elastic load balancing helps to distribute load between the instances
+ 
+You need to create Auto Scaling group and Elastic Load balancing mmanually
+
+Easiest way to setup EC2 instances with Auto Scaling group and Elastic Load balancing in AWS is to make use of PaaS in AWS which is Elastic Beanstalk
+
+If i want to setup a application using EC2 instance then i need to create an EC2 instance, then install the right runt ime on it like java or python
+and then install the application there.
+
+But Elastic Beanstalk enables us to give all those responsibilities to AWS.
+
+You can creartre a application in AWS Management console by going to Elastic beanstalk and clicking on create a applicaiton.
+X-Ray is the tracing service in AWS. If you want to trace your request across multiple microservices you can enable it
+
+Elastic beanstalk will create an EC2 instance install the application on it and OS for you and deployed the application on it as well
+This EC2 instance is created as part of auto scaling group.
+
+We can create environments like QA,DEV,PROD environment
+ 
+Elastic beanstalk also keeps ttrack of your application versions using elastic beanstalk.
+Elastic beanstalk by default provides the capability to create different versions of your applications different environments for each application
+
+Containers and container orchestration
+Microservices arfchitecture is nothing but building small focussed microservices which are independently deployable.
+Microservices architecture provides flexibility to innovate and build applications in different programming language.
+But because of this deployments are really complex as each programming language application will be different from others.
+Thats where container comes into picture
+
+Docker is one of the most popular ways of building container images
+Docker creates docker image for each microservice.
+Docker has all needs of a microservice.
+like Application runtime
+It also containes application code and depdendicies.
+Because of this it runs the same way on any infrastructure.
+
+Advantages of Docker
+It is cloud neutral. You can run it  in any cloud the same way
+It also brings standardization i.e., the way you can monitor,deploy any application remains the same way.It doesn't matter whats inside the image.
+Docker containers are light weight
+Alternative to Docker is to use virtual machines.
+In a virtual machine we had Guest OS and guest OS has a big performance impact
+Docker provides isolation for containers
+
+Container orchestration
+Challenges usiing microservices
+you want to scale each microservice based on demand(auto scaling)
+you want microservices to find each other(service discovery)
+you want to load balance between multiple instances of a microservice.
+you want to check failing microservice and replace it with a new one.
+you want to release new versions without downtime.
+
+Container orchestration tools provides all the above features
+With a container orchestration you can create a cluster(you can say you want cluster of virtual machines) and you can use a container orchestration tool
+to deploy your microservices to your cluster.
+you can provide container image and configuration to container orchestrator and thre container orchestrator would deploy your microservice to the cluster.
+
+Container Orchestration options
+Kubernetes is one of the most popular container orchestration tools today(it is cloud neutral can be run in any cloud)
+ and the service if you want to make use of kubernetes is Amazon EKS(Elastic service for kubernetes)
+ EKS does not have a free tier
+ 
+AWS also has AWS Specific container orchestration tool
+Amazon Elastic Container Service(ECS)
+
+In addition to ECS and EKS we have fargate. Fargate is serverless ECS and EKS.
+Whenever you are using ECS or EKS you need to manage the cluster you need to decide how many EC2 instances are should be in the cluster. You need to decide
+what OS ,what Hardware should be used for the EC2 instances in the cluster.
+When you are using Fargate no need to worry about all that.
+You just need to specify your microservice configuration and fargate would take care of the cluster.
+AWS Fargate doesn't have a free tier
+
+Whenever we are talking about ECS there is a hierarchy. The first thing youu need to create is something called a cluster.
+Cluster is the hardware that you need to run your applications.
+So you'd create cluster with a set of nodes
+Container is the final container you would want to run
+There miight be a situation where you want to run 2 containers together.
+That is why in ECS we have a concept of a task. A task is a group of tasks
+A service is a group of tasks.
+Fior instance if i want 10 instances of a microservice i can define that on my service.
+
+Serverless
+If you want to deploy your application you need to think about where to deploy what kind of server which OS . How to take care of scaling and availability of application
+
+But if you don't want to worry about these things and focus only on code you can go with serverless
+Serverless doesn't mean no servers
+even when we run on serverless the application still runs on server
+The important thing is you don't need to worry about server. Cloud platform takes care of everything for you
+Serverless means not at all worrying about infrastructure. You don't even know where your application is running
+
+With serverless you get flexible scaling and automated high availability
+When you are making use if serverless service you don't pay for server you pay for number of requests
+
+Most popular serverless service in AWS is AWS Lambda
+AWS Lambbda supports wide variety of languages
+
+Tou can configure max amount of memory associated with your lambda function. Higher memory higher cost
+you can associate a temporary storage with your lambda function.
+Default is 512 mb and you can increase up to 10GB
+
+YOU can configure timeout.The maximum timeout is 15 minutes
+the way you can give permissions to your lambda function is by configuring execution role.
+
+You can give a url to your lambda function by configuring function url
+you can also choose what type of authentication is required for your url
+You can use this url to invoke the lambda function
+
+You can also configure environment variables like dev qa staging
+Environment variables are key value pairs
+
+AWS Lambda provides few pre defined environment variables.
+go to AWS Lambda environment variable documentation
+
+You can associate tags to your lambda function
+you can run lambda function in a private network.
+
+Unreserved account Concurrency represents how many lambda function executions can be happenning in parallel across your account.
+By default you can have only 10
+
+
+
+

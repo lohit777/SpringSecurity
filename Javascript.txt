@@ -1,0 +1,84 @@
+Node is a program that includes Googles V8 Javascript engine.
+Node is a runtime environment to execute javascript code
+
+from es6 use let keyword to declare a variable
+By default variables get a value undefined
+
+variables should not be a reserved keyword in javascript
+it should be meaningful
+cannot start with a number
+They cannot contain a space or hyphen
+variables should be in camelcase
+variables are case sensitive
+
+constants
+cannot change the value of a constant we cannot reassign value for the constant
+
+primitive types
+Strings
+boolean
+number 
+undefined 
+null  - > we use null where we want to cvlear the name of the variable
+We will have only number type in js we will not have float
+
+Dynamic typing
+JS is a dynamically typed language. We can change the type of the variable in run time
+
+Reference types
+Objects
+arrays
+Function
+
+object contains properties of a related item
+array length can be changed in runtime
+In array we can store different types like int , string
+Array is also a object in js
+It will have many properties
+
+functions are a set of statements that builds a basic building block
+
+npx jest ./tests/findLargestElement.test.js -> To run teest cases in local 
+Function callbacks - A function is called inside another function
+
+Synchronous vs Asynchronous
+Synchrounous - Things running sequentially one after other
+Asynchronous - Happens in parts. Multiple things are context switching between each other ex- Reading files from a file system
+
+JS is single threaded but it can context switch between tasks and can delegate tasks to other processes.
+
+Common async functions in JS
+setTimeout
+fs.readFile - to read file from your filesystem
+Fetch - to fetch file from endpoint
+
+Javascript architectures
+Call Stack - Every line in JS will go to callback queue
+Web Apis - Async function ie., the functions such as setTimeOut , fs.readFile will go to the web Apis and in the meantime code will be executed in the call stack.
+callback Queue - Once the Async function is completed it will not be executed immediatley it will go to callback queue.
+Event loop - It will check whether everything in call stack is executed. Once it is executed event loop checks if there is anything in callback queue and it will execute it after everything in call stack is done
+
+Function callbacks are used in Async functions
+
+Promises
+These are pretty ways to write a async JS code. They are just a class in which we can write async code and return it through resolver.
+Usually all async functions you will write will be on top of JS provided async functions like setTimeout.
+
+
+Async await
+These are also similar to Promises just syntactical sugars. Still uses callback under the hood.
+
+Class
+//Class gives us a structure of something that was reusable in multiple places
+//Class is actually a blueprint
+//Class will have attributes and functions
+// static methods are associated to class not to object 
+    //Static methods can be called directly on class without object
+
+Date class
+ Date is a global class that is available in JS
+
+JSON - Javascript object notation
+//If we want to send JS object to some other person we will pass through json as they will know the format of the data. If we want to send data to server or receive data from server it will be useful
+
+
